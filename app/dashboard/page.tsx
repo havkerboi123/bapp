@@ -4,16 +4,26 @@ import { useEffect, useState, FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useAccount, useWriteContract, useWaitForTransactionReceipt } from "wagmi";
-import { parseAbi } from "viem";
+import { parseAbi, decodeEventLog } from "viem";
 
 // Contract ABI and address
 const LOAN_LEDGER_ABI = parseAbi([
   "function recordLoan(address partner, uint256 amount, string memory description, uint256 loanDate, uint256 expectedReturnDate) external returns (bytes32)",
+  "event LoanRecorded(bytes32 indexed loanId, address indexed owner, address indexed partner, uint256 amount, uint256 timestamp, string description, uint256 loanDate, uint256 expectedReturnDate)",
 ]);
 
 const LOAN_LEDGER_CONTRACT =
   process.env.NEXT_PUBLIC_LOAN_LEDGER_CONTRACT ||
   "0x0000000000000000000000000000000000000000";
+
+// PKR to ETH exchange rate (1 ETH = X PKR)
+// Update this rate as needed. Example: 1 ETH = 333,333 PKR means 1 PKR = 0.000003 ETH
+const PKR_TO_ETH_RATE = parseFloat(process.env.NEXT_PUBLIC_PKR_TO_ETH_RATE || "0.000003"); // Default: 1 PKR = 0.000003 ETH
+
+// Convert PKR amount to ETH (contract will multiply by 1e18)
+function convertPKRToEth(pkrAmount: number): number {
+  return pkrAmount * PKR_TO_ETH_RATE;
+}
 
 type Partner = {
   id: string;
@@ -24,15 +34,20 @@ type Partner = {
 
 type Loan = {
   id: string;
-  partnerName: string;
-  partnerUsername: string;
+  partnerName?: string;
+  partnerUsername?: string;
   partnerWallet?: string;
+  ownerName?: string;
+  ownerUsername?: string;
+  ownerWallet?: string;
   amount: number;
   description: string | null;
   loanDate: string | null;
   expectedReturnDate: string | null;
   txHash?: string | null;
   status?: string;
+  loanType?: "given" | "taken";
+  onchainLoanId?: string | null;
 };
 
 export default function DashboardPage() {
@@ -42,7 +57,11 @@ export default function DashboardPage() {
   const [currentUser, setCurrentUser] = useState<{ name: string; username: string } | null>(null);
   const [partners, setPartners] = useState<Partner[]>([]);
   const [loans, setLoans] = useState<Loan[]>([]);
+  const [loansGiven, setLoansGiven] = useState<Loan[]>([]);
+  const [loansTaken, setLoansTaken] = useState<Loan[]>([]);
   const [totalLoan, setTotalLoan] = useState<number>(0);
+  const [totalLoanGiven, setTotalLoanGiven] = useState<number>(0);
+  const [totalLoanTaken, setTotalLoanTaken] = useState<number>(0);
   const [partnerCount, setPartnerCount] = useState<number>(0);
 
   const [newPartnerUsername, setNewPartnerUsername] = useState("");
@@ -126,19 +145,28 @@ export default function DashboardPage() {
           return;
         }
 
+        // Convert PKR amount to ETH, then to wei
+        // Example: 15 PKR * 0.000003 = 0.000045 ETH
+        // Convert to wei: 0.000045 * 1e18 = 45000000000000 wei
+        const ethAmount = convertPKRToEth(loanToRecord.amount);
+        const weiAmount = BigInt(Math.floor(ethAmount * 1e18));
+        
         console.log("Calling writeContract with:", {
           address: LOAN_LEDGER_CONTRACT,
           partner: loanToRecord.partnerWallet,
-          amount: loanToRecord.amount,
+          pkrAmount: loanToRecord.amount,
+          ethAmount: ethAmount.toFixed(6),
+          weiAmount: weiAmount.toString(),
+          rate: `${PKR_TO_ETH_RATE} ETH per PKR`,
         });
-
+        
         writeContract({
           address: LOAN_LEDGER_CONTRACT as `0x${string}`,
           abi: LOAN_LEDGER_ABI,
           functionName: "recordLoan",
           args: [
             loanToRecord.partnerWallet as `0x${string}`,
-            BigInt(loanToRecord.amount),
+            weiAmount, // Pass amount in wei (already converted from PKR to ETH)
             loanToRecord.description || "",
             BigInt(loanDateUnix),
             BigInt(expectedReturnUnix),
@@ -178,17 +206,45 @@ export default function DashboardPage() {
     }
   }, [writeError, recordingLoanId]);
 
-  // When transaction is confirmed, update loan with tx hash
+  // When transaction is confirmed, update loan with tx hash and on-chain loan ID
   useEffect(() => {
-    if (isConfirmed && txHash && recordingLoanId) {
+    if (isConfirmed && txHash && recordingLoanId && receipt) {
       // Use receipt transaction hash if available, otherwise use the original hash
-      const finalTxHash = receipt?.transactionHash || txHash;
+      const finalTxHash = receipt.transactionHash || txHash;
+      
+      // Extract loan ID from the LoanRecorded event in the receipt logs
+      let onchainLoanId: string | undefined;
+      try {
+        const contractAddress = LOAN_LEDGER_CONTRACT as `0x${string}`;
+        for (const log of receipt.logs) {
+          if (log.address.toLowerCase() === contractAddress.toLowerCase()) {
+            try {
+              const decoded = decodeEventLog({
+                abi: LOAN_LEDGER_ABI,
+                data: log.data,
+                topics: log.topics,
+              });
+              if (decoded.eventName === "LoanRecorded") {
+                onchainLoanId = decoded.args.loanId as string;
+                break;
+              }
+            } catch (e) {
+              // Not the event we're looking for, continue
+            }
+          }
+        }
+      } catch (err) {
+        console.warn("Failed to extract loan ID from receipt:", err);
+      }
+
       console.log("Transaction confirmed, updating loan with tx hash:", {
         loanId: recordingLoanId,
         txHash: finalTxHash,
-        receiptHash: receipt?.transactionHash,
+        onchainLoanId,
+        receiptHash: receipt.transactionHash,
         originalHash: txHash,
       });
+      
       const updateLoan = async () => {
         try {
           const res = await fetch("/api/loans/update-tx", {
@@ -197,6 +253,7 @@ export default function DashboardPage() {
             body: JSON.stringify({
               loanId: recordingLoanId,
               txHash: finalTxHash,
+              onchainLoanId: onchainLoanId,
             }),
           });
 
@@ -227,7 +284,7 @@ export default function DashboardPage() {
 
       void updateLoan();
     }
-  }, [isConfirmed, txHash, recordingLoanId, address]);
+  }, [isConfirmed, txHash, recordingLoanId, address, receipt]);
 
   useEffect(() => {
     if (!isConnected || !address) {
@@ -240,7 +297,7 @@ export default function DashboardPage() {
         const [userRes, partnersRes, loansRes] = await Promise.all([
           fetch(`/api/signup?walletAddress=${encodeURIComponent(address)}`),
           fetch(`/api/partners?ownerWallet=${encodeURIComponent(address)}`),
-          fetch(`/api/loans?ownerWallet=${encodeURIComponent(address)}`),
+          fetch(`/api/loans?ownerWallet=${encodeURIComponent(address)}&partnerWallet=${encodeURIComponent(address)}`),
         ]);
 
         if (userRes.ok) {
@@ -265,10 +322,15 @@ export default function DashboardPage() {
         if (loansRes.ok) {
           const data = await loansRes.json();
           setLoans(data.loans ?? []);
+          setLoansGiven(data.loansGiven ?? []);
+          setLoansTaken(data.loansTaken ?? []);
           setTotalLoan(data.totalLoan ?? 0);
+          setTotalLoanGiven(data.totalLoanGiven ?? 0);
+          setTotalLoanTaken(data.totalLoanTaken ?? 0);
 
           // Find accepted loans that need on-chain recording (no txHash yet)
-          const acceptedWithoutTx = data.loans?.filter(
+          // Only from loans given (where user is owner)
+          const acceptedWithoutTx = data.loansGiven?.filter(
             (loan: Loan) =>
               loan.status === "accepted" && !loan.txHash && loan.partnerWallet,
           );
@@ -679,15 +741,55 @@ export default function DashboardPage() {
                           fontWeight: 600,
                         }}
                       >
-                        {loan.partnerName}{" "}
-                        <span
-                          style={{
-                            fontSize: "0.8rem",
-                            color: "rgba(0,0,0,0.55)",
-                          }}
-                        >
-                          (@{loan.partnerUsername})
-                        </span>
+                        {loan.loanType === "taken" ? (
+                          <>
+                            {loan.ownerName}{" "}
+                            <span
+                              style={{
+                                fontSize: "0.8rem",
+                                color: "rgba(0,0,0,0.55)",
+                              }}
+                            >
+                              (@{loan.ownerUsername})
+                            </span>
+                            <span
+                              style={{
+                                fontSize: "0.7rem",
+                                marginLeft: "0.5rem",
+                                padding: "0.15rem 0.4rem",
+                                borderRadius: "4px",
+                                background: "#e0f2fe",
+                                color: "#0e7490",
+                              }}
+                            >
+                              Taken
+                            </span>
+                          </>
+                        ) : (
+                          <>
+                            {loan.partnerName}{" "}
+                            <span
+                              style={{
+                                fontSize: "0.8rem",
+                                color: "rgba(0,0,0,0.55)",
+                              }}
+                            >
+                              (@{loan.partnerUsername})
+                            </span>
+                            <span
+                              style={{
+                                fontSize: "0.7rem",
+                                marginLeft: "0.5rem",
+                                padding: "0.15rem 0.4rem",
+                                borderRadius: "4px",
+                                background: "#fee2e2",
+                                color: "#d0312d",
+                              }}
+                            >
+                              Given
+                            </span>
+                          </>
+                        )}
                         {loan.status && (
                           <span
                             style={{
@@ -700,20 +802,32 @@ export default function DashboardPage() {
                                   ? "#d4edda"
                                   : loan.status === "rejected"
                                     ? "#f8d7da"
-                                    : "#fff3cd",
+                                    : loan.status === "waiting on payment"
+                                      ? "#cfe2ff"
+                                      : loan.status === "paid back"
+                                        ? "#d1e7dd"
+                                        : "#fff3cd",
                               color:
                                 loan.status === "accepted"
                                   ? "#155724"
                                   : loan.status === "rejected"
                                     ? "#721c24"
-                                    : "#856404",
+                                    : loan.status === "waiting on payment"
+                                      ? "#084298"
+                                      : loan.status === "paid back"
+                                        ? "#0f5132"
+                                        : "#856404",
                             }}
                           >
                             {loan.status === "accepted"
                               ? "✓ Accepted"
                               : loan.status === "rejected"
                                 ? "✗ Rejected"
-                                : "⏳ Pending"}
+                                : loan.status === "waiting on payment"
+                                  ? "⏳ Waiting on Payment"
+                                  : loan.status === "paid back"
+                                    ? "✓ Paid Back"
+                                    : "⏳ Pending"}
                           </span>
                         )}
                       </div>
@@ -769,7 +883,7 @@ export default function DashboardPage() {
                     <div
                       style={{
                         fontWeight: 700,
-                        color: "#d0312d",
+                        color: loan.loanType === "taken" ? "#0e7490" : "#d0312d",
                         fontSize: "0.95rem",
                       }}
                     >

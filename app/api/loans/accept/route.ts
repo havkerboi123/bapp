@@ -72,13 +72,37 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    // Get owner wallet address
+    const { data: ownerWalletData } = await supabase
+      .from("users")
+      .select("wallet_address")
+      .eq("id", loan.owner_user_id)
+      .single();
+
+    // Get partner wallet address
+    const { data: partnerWalletData } = await supabase
+      .from("users")
+      .select("wallet_address")
+      .eq("id", loan.partner_user_id)
+      .single();
+
     // Update loan status
     const newStatus = body.action === "accept" ? "accepted" : "rejected";
     
     // Update the loan - update by ID only since we've already verified permissions
+    const updatePayload: any = { status: newStatus };
+    
+    // Update wallet addresses if they're not already set
+    if (ownerWalletData?.wallet_address) {
+      updatePayload.owner_wallet_address = ownerWalletData.wallet_address;
+    }
+    if (partnerWalletData?.wallet_address) {
+      updatePayload.partner_wallet_address = partnerWalletData.wallet_address;
+    }
+    
     const { data: updateData, error: updateError } = await supabase
       .from("loans")
-      .update({ status: newStatus })
+      .update(updatePayload)
       .eq("id", body.loanId)
       .select("*");
 
