@@ -509,9 +509,30 @@ export default function DashboardPage() {
             boxShadow: "0 4px 12px rgba(15,112,255,0.08)",
             fontSize: "0.9rem",
             color: "rgba(0,0,0,0.7)",
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            flexWrap: "wrap",
+            gap: "1rem",
           }}
         >
-          Currently signed in as: <strong>{currentUser.username}</strong>
+          <div>
+            Currently signed in as: <strong>{currentUser.username}</strong>
+          </div>
+          <Link
+            href="/nft"
+            style={{
+              padding: "0.5rem 1rem",
+              background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+              color: "white",
+              borderRadius: "8px",
+              textDecoration: "none",
+              fontWeight: "600",
+              fontSize: "0.9rem",
+            }}
+          >
+            🎉 View My NFTs
+          </Link>
         </div>
       )}
       {(!LOAN_LEDGER_CONTRACT ||

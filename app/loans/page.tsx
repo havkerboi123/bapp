@@ -599,33 +599,62 @@ export default function PendingLoansPage() {
             >
               Pending Loans
             </h1>
-            <Link
-              href="/dashboard"
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "0.5rem",
-                fontSize: "0.85rem",
-                color: "#0f70ff",
-                textDecoration: "none",
-                padding: "0.5rem 1rem",
-                borderRadius: 8,
-                border: "1px solid rgba(15,112,255,0.2)",
-                background: "rgba(15,112,255,0.05)",
-                transition: "all 0.2s",
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.background = "rgba(15,112,255,0.1)";
-                e.currentTarget.style.borderColor = "rgba(15,112,255,0.4)";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.background = "rgba(15,112,255,0.05)";
-                e.currentTarget.style.borderColor = "rgba(15,112,255,0.2)";
-              }}
-            >
-              <span>🏠</span>
-              <span>Dashboard</span>
-            </Link>
+            <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
+              <Link
+                href="/nft"
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "0.5rem",
+                  fontSize: "0.85rem",
+                  color: "#764ba2",
+                  textDecoration: "none",
+                  padding: "0.5rem 1rem",
+                  borderRadius: 8,
+                  border: "1px solid rgba(118,75,162,0.2)",
+                  background: "rgba(118,75,162,0.05)",
+                  transition: "all 0.2s",
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = "rgba(118,75,162,0.1)";
+                  e.currentTarget.style.borderColor = "rgba(118,75,162,0.4)";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = "rgba(118,75,162,0.05)";
+                  e.currentTarget.style.borderColor = "rgba(118,75,162,0.2)";
+                }}
+              >
+                <span>🎉</span>
+                <span>My NFTs</span>
+              </Link>
+              <Link
+                href="/dashboard"
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "0.5rem",
+                  fontSize: "0.85rem",
+                  color: "#0f70ff",
+                  textDecoration: "none",
+                  padding: "0.5rem 1rem",
+                  borderRadius: 8,
+                  border: "1px solid rgba(15,112,255,0.2)",
+                  background: "rgba(15,112,255,0.05)",
+                  transition: "all 0.2s",
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = "rgba(15,112,255,0.1)";
+                  e.currentTarget.style.borderColor = "rgba(15,112,255,0.4)";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = "rgba(15,112,255,0.05)";
+                  e.currentTarget.style.borderColor = "rgba(15,112,255,0.2)";
+                }}
+              >
+                <span>🏠</span>
+                <span>Dashboard</span>
+              </Link>
+            </div>
           </div>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
             <p

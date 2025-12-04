@@ -181,9 +181,58 @@ export async function POST(req: NextRequest) {
     console.log("✅ Loan status updated to 'paid back'");
     console.log("=".repeat(60));
 
+    // Mint achievement NFT for the partner
+    let nftMintResult = null;
+    try {
+      if (loan.onchain_loan_id) {
+        // Convert PKR amount to wei (same conversion as frontend)
+        const PKR_TO_ETH_RATE = parseFloat(
+          process.env.NEXT_PUBLIC_PKR_TO_ETH_RATE || "0.000003",
+        );
+        const ethAmount = loan.amount * PKR_TO_ETH_RATE;
+        const weiAmount = BigInt(Math.floor(ethAmount * 1e18));
+
+        // Call NFT minting endpoint
+        const mintResponse = await fetch(
+          `${process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"}/api/nft/mint`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              recipientAddress: normalizedWallet,
+              loanId: loan.onchain_loan_id,
+              amount: weiAmount.toString(),
+            }),
+          },
+        );
+
+        if (mintResponse.ok) {
+          nftMintResult = await mintResponse.json();
+          console.log("🎉 Achievement NFT minted successfully!");
+          console.log("NFT Token ID:", nftMintResult.tokenId);
+        } else {
+          const errorData = await mintResponse.json();
+          console.error("⚠️ Failed to mint NFT:", errorData.error);
+          // Don't fail the payment if NFT minting fails
+        }
+      }
+    } catch (nftError: any) {
+      console.error("⚠️ Error minting NFT:", nftError.message);
+      // Don't fail the payment if NFT minting fails
+    }
+
     return NextResponse.json({
       success: true,
       loan: updateData,
+      nft: nftMintResult
+        ? {
+            tokenId: nftMintResult.tokenId,
+            transactionHash: nftMintResult.transactionHash,
+            message: "Achievement NFT minted!",
+          }
+        : null,
     });
   } catch {
     return NextResponse.json(
