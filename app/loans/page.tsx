@@ -564,8 +564,7 @@ export default function PendingLoansPage() {
     <main
       style={{
         minHeight: "100vh",
-        background:
-          "radial-gradient(circle at top left, #e0f0ff 0, transparent 45%), radial-gradient(circle at bottom right, #fbe7ff 0, transparent 40%), #f7f9fc",
+        background: "linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)",
         padding: "2rem 1.5rem 3rem",
         display: "flex",
         justifyContent: "center",
@@ -578,7 +577,7 @@ export default function PendingLoansPage() {
           background: "white",
           borderRadius: 20,
           padding: "2rem",
-          boxShadow: "0 20px 45px rgba(15,112,255,0.08)",
+          boxShadow: "0 20px 45px rgba(0,82,255,0.08)",
         }}
       >
         <header style={{ marginBottom: "1.5rem" }}>
@@ -592,9 +591,14 @@ export default function PendingLoansPage() {
           >
             <h1
               style={{
-                fontSize: "1.5rem",
+                fontSize: "1.75rem",
                 fontWeight: 700,
                 margin: 0,
+                fontFamily: "var(--font-space-grotesk), sans-serif",
+                background: "linear-gradient(135deg, #0052FF 0%, #00D4FF 100%)",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+                backgroundClip: "text",
               }}
             >
               Pending Loans
@@ -634,21 +638,21 @@ export default function PendingLoansPage() {
                   alignItems: "center",
                   gap: "0.5rem",
                   fontSize: "0.85rem",
-                  color: "#0f70ff",
+                  color: "#0052FF",
                   textDecoration: "none",
                   padding: "0.5rem 1rem",
                   borderRadius: 8,
-                  border: "1px solid rgba(15,112,255,0.2)",
-                  background: "rgba(15,112,255,0.05)",
+                  border: "1px solid rgba(0,82,255,0.2)",
+                  background: "rgba(0,82,255,0.05)",
                   transition: "all 0.2s",
                 }}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.background = "rgba(15,112,255,0.1)";
-                  e.currentTarget.style.borderColor = "rgba(15,112,255,0.4)";
+                  e.currentTarget.style.background = "rgba(0,82,255,0.1)";
+                  e.currentTarget.style.borderColor = "rgba(0,82,255,0.4)";
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.background = "rgba(15,112,255,0.05)";
-                  e.currentTarget.style.borderColor = "rgba(15,112,255,0.2)";
+                  e.currentTarget.style.background = "rgba(0,82,255,0.05)";
+                  e.currentTarget.style.borderColor = "rgba(0,82,255,0.2)";
                 }}
               >
                 <span>🏠</span>
@@ -704,7 +708,7 @@ export default function PendingLoansPage() {
                 borderRadius: 8,
                 border: "1px solid rgba(0,0,0,0.2)",
                 background: "white",
-                color: "#0f70ff",
+                color: "#0052FF",
                 fontWeight: 600,
                 fontSize: "0.85rem",
                 cursor: "pointer",
@@ -924,7 +928,7 @@ export default function PendingLoansPage() {
                         key={loan.id}
                         style={{
                           padding: "1.25rem",
-                          border: "1px solid rgba(15,112,255,0.2)",
+                          border: "1px solid rgba(0,82,255,0.2)",
                           borderRadius: 12,
                           background: "#e7f3ff",
                         }}
@@ -1008,7 +1012,7 @@ export default function PendingLoansPage() {
                             color: "rgba(0,0,0,0.5)",
                             marginBottom: "1rem",
                             padding: "0.5rem",
-                            background: "rgba(15,112,255,0.1)",
+                            background: "rgba(0,82,255,0.1)",
                             borderRadius: 6,
                           }}
                         >
@@ -1023,7 +1027,7 @@ export default function PendingLoansPage() {
                             padding: "0.75rem 1rem",
                             borderRadius: 8,
                             border: "none",
-                            background: payingLoanId === loan.id || isPaying || isConfirmingPayment ? "#6c757d" : "#0f70ff",
+                            background: payingLoanId === loan.id || isPaying || isConfirmingPayment ? "#6c757d" : "#0052FF",
                             color: "white",
                             fontWeight: 600,
                             fontSize: "0.9rem",

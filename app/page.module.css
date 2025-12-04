@@ -1,16 +1,42 @@
 .container {
   min-height: 100vh;
-  background: radial-gradient(circle at top left, #e0f0ff 0, transparent 45%),
-    radial-gradient(circle at bottom right, #fbe7ff 0, transparent 40%),
-    #f7f9fc;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
   display: flex;
   flex-direction: column;
+  position: relative;
+  overflow: hidden;
+}
+
+.container::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -20%;
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, rgba(0, 82, 255, 0.1) 0%, transparent 70%);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.container::after {
+  content: '';
+  position: absolute;
+  bottom: -30%;
+  left: -10%;
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, rgba(0, 212, 255, 0.1) 0%, transparent 70%);
+  border-radius: 50%;
+  pointer-events: none;
 }
 
 .headerWrapper {
   display: flex;
   justify-content: flex-end;
-  padding: 1.25rem 2rem;
+  padding: 1.5rem 2.5rem;
+  position: relative;
+  z-index: 10;
 }
 
 .content {
@@ -19,24 +45,29 @@
   align-items: center;
   justify-content: center;
   padding: 2rem;
+  position: relative;
+  z-index: 1;
 }
 
 .heroCard {
   width: 100%;
-  max-width: 980px;
-  border-radius: 24px;
-  background: rgba(255, 255, 255, 0.9);
-  box-shadow: 0 24px 60px rgba(15, 112, 255, 0.15);
+  max-width: 1200px;
+  border-radius: 32px;
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 20px 60px rgba(0, 82, 255, 0.12), 0 0 0 1px rgba(0, 0, 0, 0.04);
   display: grid;
-  grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
-  gap: 2.5rem;
-  padding: 2.25rem 2.5rem;
-  backdrop-filter: blur(18px);
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+  gap: 4rem;
+  padding: 3.5rem 4rem;
+  backdrop-filter: blur(20px);
+  position: relative;
 }
 
 @media (max-width: 900px) {
   .heroCard {
     grid-template-columns: minmax(0, 1fr);
+    gap: 2rem;
+    padding: 2.5rem 2rem;
   }
 }
 
@@ -51,29 +82,36 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 1rem;
+  gap: 2rem;
+  position: relative;
+  min-height: 400px;
 }
 
 .stepper {
   display: flex;
-  gap: 1rem;
-  margin-bottom: 1.75rem;
+  gap: 0.75rem;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
 }
 
 .step {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.5rem 1rem;
+  padding: 0.625rem 1.25rem;
   border-radius: 999px;
-  border: 1px solid rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(0, 0, 0, 0.08);
   font-size: 0.875rem;
+  font-weight: 500;
+  background: rgba(0, 0, 0, 0.02);
+  transition: all 0.2s ease;
 }
 
 .stepActive {
-  background: #0f70ff;
+  background: #0052FF;
   color: white;
-  border-color: #0f70ff;
+  border-color: #0052FF;
+  box-shadow: 0 4px 12px rgba(0, 82, 255, 0.2);
 }
 
 .stepNumber {
@@ -89,37 +127,96 @@
 }
 
 .stepActive .stepNumber {
-  background: rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.25);
 }
 
-.heroTitle {
-  font-size: clamp(2.5rem, 4vw, 3rem);
+.appTitle {
+  font-family: var(--font-space-grotesk), -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: clamp(3.5rem, 6vw, 5.5rem);
   font-weight: 700;
   text-align: left;
   margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.titleMain {
+  background: linear-gradient(135deg, #0052FF 0%, #00D4FF 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-weight: 700;
+}
+
+.titleAI {
+  color: #00D4FF;
+  font-weight: 700;
+  font-size: 0.65em;
+  padding: 0.25em 0.6em;
+  border-radius: 10px;
+  background: linear-gradient(135deg, rgba(0, 212, 255, 0.15) 0%, rgba(0, 82, 255, 0.15) 100%);
+  border: 1.5px solid rgba(0, 212, 255, 0.3);
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  vertical-align: middle;
+  margin-top: 0.05em;
+}
+
+.tagline {
+  font-size: clamp(1.25rem, 2vw, 1.5rem);
+  font-weight: 600;
+  text-align: left;
+  margin-top: 0.75rem;
+  margin-bottom: 0;
+  color: rgba(0, 0, 0, 0.75);
+  letter-spacing: -0.01em;
 }
 
 .heroSubtitle {
-  margin-top: 0.75rem;
+  margin-top: 1.5rem;
   max-width: 600px;
   text-align: left;
-  color: rgba(0, 0, 0, 0.7);
+  color: rgba(0, 0, 0, 0.65);
+  font-size: 1.125rem;
+  line-height: 1.6;
+  font-weight: 400;
 }
 
 .primaryButton {
-  margin-top: 2rem;
-  padding: 0.75rem 1.5rem;
-  border-radius: 999px;
+  padding: 0.875rem 2rem;
+  border-radius: 12px;
   border: none;
-  background: #0f70ff;
+  background: #0052FF;
   color: white;
   font-weight: 600;
+  font-size: 1rem;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  min-width: 190px;
+  min-width: 200px;
+  height: 48px;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 12px rgba(0, 82, 255, 0.3);
+}
+
+.primaryButton:hover:not(:disabled) {
+  background: #0040CC;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(0, 82, 255, 0.4);
+}
+
+.primaryButton:active:not(:disabled) {
+  transform: translateY(0);
 }
 
 .primaryButton:disabled {
@@ -130,23 +227,36 @@
 .actionsRow {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.75rem;
-  margin-top: 1.5rem;
+  gap: 1rem;
+  margin-top: 2rem;
 }
 
 .secondaryButton {
-  padding: 0.75rem 1.5rem;
-  border-radius: 999px;
-  border: 1px solid rgba(0, 0, 0, 0.12);
+  padding: 0.875rem 2rem;
+  border-radius: 12px;
+  border: 1.5px solid rgba(0, 82, 255, 0.2);
   background: white;
-  color: #0f70ff;
+  color: #0052FF;
   font-weight: 600;
+  font-size: 1rem;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  min-width: 190px;
+  min-width: 200px;
+  height: 48px;
+  transition: all 0.2s ease;
+}
+
+.secondaryButton:hover:not(:disabled) {
+  background: rgba(0, 82, 255, 0.05);
+  border-color: rgba(0, 82, 255, 0.3);
+  transform: translateY(-1px);
+}
+
+.secondaryButton:active:not(:disabled) {
+  transform: translateY(0);
 }
 
 .secondaryButton:disabled {
@@ -155,13 +265,140 @@
 }
 
 .helperText {
-  margin-top: 0.75rem;
-  font-size: 0.85rem;
-  color: rgba(0, 0, 0, 0.6);
+  margin-top: 1rem;
+  font-size: 0.9375rem;
+  color: rgba(0, 0, 0, 0.55);
+  line-height: 1.5;
 }
 
 .errorText {
-  margin-top: 0.75rem;
-  font-size: 0.85rem;
+  margin-top: 1rem;
+  font-size: 0.9375rem;
   color: #d0312d;
+  line-height: 1.5;
+}
+
+.avatarGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
+  position: relative;
+  z-index: 2;
+}
+
+.avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8px 24px rgba(0, 82, 255, 0.15);
+  animation: float 3s ease-in-out infinite;
+}
+
+.avatar:nth-child(1) {
+  animation-delay: 0s;
+}
+
+.avatar:nth-child(2) {
+  animation-delay: 0.5s;
+}
+
+.avatar:nth-child(3) {
+  animation-delay: 1s;
+}
+
+.avatar:nth-child(4) {
+  animation-delay: 1.5s;
+}
+
+.avatar svg {
+  width: 100%;
+  height: 100%;
+}
+
+.moneyIcons {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+  position: relative;
+  z-index: 2;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.moneyIcon {
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: float 3.5s ease-in-out infinite;
+}
+
+.moneyIcon:nth-child(1) {
+  animation-delay: 0.8s;
+}
+
+.moneyIcon:nth-child(2) {
+  animation-delay: 2.2s;
+}
+
+.moneyIcon svg {
+  width: 100%;
+  height: 100%;
+}
+
+.artDecoration {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.floatingShape {
+  position: absolute;
+  border-radius: 50%;
+  opacity: 0.1;
+  animation: float 4s ease-in-out infinite;
+}
+
+.floatingShape:nth-child(1) {
+  width: 120px;
+  height: 120px;
+  background: #0052FF;
+  top: 10%;
+  right: 10%;
+  animation-delay: 0s;
+}
+
+.floatingShape:nth-child(2) {
+  width: 80px;
+  height: 80px;
+  background: #00D4FF;
+  bottom: 20%;
+  left: 15%;
+  animation-delay: 1.5s;
+}
+
+.floatingShape:nth-child(3) {
+  width: 100px;
+  height: 100px;
+  background: #0052FF;
+  top: 50%;
+  right: 5%;
+  animation-delay: 3s;
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-20px);
+  }
 }

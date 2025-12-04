@@ -14,7 +14,7 @@ export default function Home() {
 
   const handleSignup = async () => {
     if (!isConnected || !address) {
-      setError("Pehle apna Base wallet connect karein.");
+      setError("Please connect your Base wallet first.");
       return;
     }
 
@@ -28,7 +28,7 @@ export default function Home() {
 
       if (res.ok) {
         // User already exists for this wallet
-        setError("Yeh wallet pehle se registered hai. Sign in karein.");
+        setError("This wallet is already registered. Please sign in.");
         return;
       }
 
@@ -37,9 +37,9 @@ export default function Home() {
         return;
       }
 
-      setError("Kuch ghalat ho gaya. Thori dair baad dobara koshish karein.");
+      setError("Something went wrong. Please try again in a moment.");
     } catch (e) {
-      setError("Network issue. Internet check karein aur dobara koshish karein.");
+      setError("Network issue. Please check your internet and try again.");
     } finally {
       setLoadingAction(null);
     }
@@ -47,7 +47,7 @@ export default function Home() {
 
   const handleSignin = async () => {
     if (!isConnected || !address) {
-      setError("Pehle apna Base wallet connect karein.");
+      setError("Please connect your Base wallet first.");
       return;
     }
 
@@ -65,13 +65,13 @@ export default function Home() {
       }
 
       if (res.status === 404) {
-        setError("Is wallet ke sath koi account nahi mila. Pehle sign up karein.");
+        setError("No account found with this wallet. Please sign up first.");
         return;
       }
 
-      setError("Kuch ghalat ho gaya. Thori dair baad dobara koshish karein.");
+      setError("Something went wrong. Please try again in a moment.");
     } catch (e) {
-      setError("Network issue. Internet check karein aur dobara koshish karein.");
+      setError("Network issue. Please check your internet and try again.");
     } finally {
       setLoadingAction(null);
     }
@@ -99,17 +99,19 @@ export default function Home() {
                 }`}
               >
                 <div className={styles.stepNumber}>2</div>
-                <div>Create your khata profile</div>
+                <div>Create your ledger profile</div>
               </div>
             </div>
 
-            <h1 className={styles.heroTitle}>
-              Urdu Voice AI Ledger for Pakistani Shopkeepers
+            <h1 className={styles.appTitle}>
+              <span className={styles.titleMain}>Khitab</span>
+              <span className={styles.titleAI}>AI</span>
             </h1>
+            <p className={styles.tagline}>
+              Urdu voice AI ledger for Pakistani shopkeepers
+            </p>
             <p className={styles.heroSubtitle}>
-              Apni dukaan ka purana register digital bana dein. Base par Urdu
-              voice se udhaar likhwain, hisaab check karein, aur USDC payments
-              bhejain – seedha apne wallet se.
+              Digitize your shop's old register. On Base, record credit using Urdu voice, check accounts, and send crypto payments directly from your wallet, all on base.
             </p>
 
             <div className={styles.actionsRow}>
@@ -130,23 +132,64 @@ export default function Home() {
               </button>
             </div>
 
-            {!error && (
-              <p className={styles.helperText}>
-                Pehle wallet connect karein, phir naya khata banayein ya pehle se
-                bana hua khata open karein.
-              </p>
-            )}
             {error && <p className={styles.errorText}>{error}</p>}
           </div>
 
           <div className={styles.rightCol}>
-            <Image
-              priority
-              src="/sphere.svg"
-              alt="Urdu Ledger"
-              width={260}
-              height={260}
-            />
+            <div className={styles.avatarGrid}>
+              <div className={styles.avatar}>
+                <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <circle cx="50" cy="50" r="50" fill="#0052FF"/>
+                  <text x="50" y="65" fontFamily="Arial, sans-serif" fontSize="50" fontWeight="bold" fill="white" textAnchor="middle">$</text>
+                </svg>
+              </div>
+              <div className={styles.avatar}>
+                <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <circle cx="50" cy="50" r="50" fill="#00D4FF"/>
+                  {/* Shopkeeper with hat */}
+                  <circle cx="50" cy="35" r="12" fill="white"/>
+                  <ellipse cx="50" cy="50" rx="18" ry="20" fill="white"/>
+                  <path d="M35 50 Q50 45 65 50" stroke="white" strokeWidth="3" fill="none" strokeLinecap="round"/>
+                  <rect x="42" y="25" width="16" height="8" rx="4" fill="white"/>
+                </svg>
+              </div>
+              <div className={styles.avatar}>
+                <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <circle cx="50" cy="50" r="50" fill="#0052FF"/>
+                  {/* Shopkeeper with turban */}
+                  <circle cx="50" cy="35" r="12" fill="white"/>
+                  <ellipse cx="50" cy="50" rx="18" ry="20" fill="white"/>
+                  <path d="M35 50 Q50 45 65 50" stroke="white" strokeWidth="3" fill="none" strokeLinecap="round"/>
+                  <ellipse cx="50" cy="28" rx="14" ry="6" fill="white"/>
+                  <ellipse cx="50" cy="25" rx="10" ry="4" fill="white"/>
+                </svg>
+              </div>
+              <div className={styles.avatar}>
+                <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <circle cx="50" cy="50" r="50" fill="#00D4FF"/>
+                  <text x="50" y="65" fontFamily="Arial, sans-serif" fontSize="50" fontWeight="bold" fill="white" textAnchor="middle">$</text>
+                </svg>
+              </div>
+            </div>
+            <div className={styles.moneyIcons}>
+              <div className={styles.moneyIcon}>
+                <svg viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <circle cx="30" cy="30" r="28" fill="#0052FF" opacity="0.2"/>
+                  <text x="30" y="40" fontFamily="Arial, sans-serif" fontSize="35" fontWeight="bold" fill="#0052FF" textAnchor="middle">$</text>
+                </svg>
+              </div>
+              <div className={styles.moneyIcon}>
+                <svg viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <circle cx="30" cy="30" r="28" fill="#00D4FF" opacity="0.2"/>
+                  <text x="30" y="40" fontFamily="Arial, sans-serif" fontSize="35" fontWeight="bold" fill="#00D4FF" textAnchor="middle">$</text>
+                </svg>
+              </div>
+            </div>
+            <div className={styles.artDecoration}>
+              <div className={styles.floatingShape}></div>
+              <div className={styles.floatingShape}></div>
+              <div className={styles.floatingShape}></div>
+            </div>
           </div>
         </div>
       </div>

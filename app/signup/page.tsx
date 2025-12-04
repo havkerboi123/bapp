@@ -67,17 +67,19 @@ export default function SignupPage() {
         alignItems: "center",
         justifyContent: "center",
         padding: "2rem",
+        background: "linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)",
       }}
     >
       <div
         style={{
           width: "100%",
           maxWidth: "480px",
-          borderRadius: "1rem",
+          borderRadius: "24px",
           border: "1px solid rgba(0,0,0,0.08)",
-          padding: "2rem",
-          boxShadow: "0 18px 45px rgba(15,112,255,0.08)",
-          background: "white",
+          padding: "2.5rem",
+          boxShadow: "0 20px 60px rgba(0, 82, 255, 0.12), 0 0 0 1px rgba(0, 0, 0, 0.04)",
+          background: "rgba(255, 255, 255, 0.95)",
+          backdropFilter: "blur(20px)",
         }}
       >
         <div
@@ -88,32 +90,37 @@ export default function SignupPage() {
             fontSize: "0.875rem",
           }}
         >
-          <div style={{ fontWeight: 600 }}>Step 1: Wallet</div>
-          <div style={{ fontWeight: 600, color: "#0f70ff" }}>
+          <div style={{ fontWeight: 600, color: "rgba(0,0,0,0.6)" }}>Step 1: Wallet</div>
+          <div style={{ fontWeight: 600, color: "#0052FF" }}>
             Step 2: Signup
           </div>
         </div>
 
         <h1
           style={{
-            fontSize: "1.5rem",
+            fontSize: "1.75rem",
             fontWeight: 700,
             marginBottom: "0.5rem",
+            fontFamily: "var(--font-space-grotesk), sans-serif",
+            background: "linear-gradient(135deg, #0052FF 0%, #00D4FF 100%)",
+            WebkitBackgroundClip: "text",
+            WebkitTextFillColor: "transparent",
+            backgroundClip: "text",
           }}
         >
-          Create your khata profile
+          Create your ledger profile
         </h1>
         <p
           style={{
-            fontSize: "0.9rem",
+            fontSize: "0.9375rem",
             color: "rgba(0,0,0,0.65)",
             marginBottom: "1.5rem",
+            lineHeight: "1.6",
           }}
         >
-          Yeh details sirf aap ke liye hain. Aapka Base wallet already connected
-          hai:
+          These details are for your account. Your Base wallet is already connected:
           <br />
-          <span style={{ fontFamily: "monospace", fontSize: "0.8rem" }}>
+          <span style={{ fontFamily: "monospace", fontSize: "0.8rem", color: "rgba(0,0,0,0.5)" }}>
             {address}
           </span>
         </p>
@@ -131,12 +138,22 @@ export default function SignupPage() {
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder="Aap ka naam (e.g. Ahmed Khan)"
+              placeholder="Your name (e.g. Ahmed Khan)"
               style={{
                 width: "100%",
-                padding: "0.6rem 0.8rem",
-                borderRadius: 8,
-                border: "1px solid rgba(0,0,0,0.15)",
+                padding: "0.75rem 1rem",
+                borderRadius: 12,
+                border: "1.5px solid rgba(0,0,0,0.12)",
+                fontSize: "0.9375rem",
+                transition: "all 0.2s",
+              }}
+              onFocus={(e) => {
+                e.currentTarget.style.borderColor = "#0052FF";
+                e.currentTarget.style.boxShadow = "0 0 0 3px rgba(0, 82, 255, 0.1)";
+              }}
+              onBlur={(e) => {
+                e.currentTarget.style.borderColor = "rgba(0,0,0,0.12)";
+                e.currentTarget.style.boxShadow = "none";
               }}
             />
           </div>
@@ -153,12 +170,22 @@ export default function SignupPage() {
               type="text"
               value={storeName}
               onChange={(e) => setStoreName(e.target.value)}
-              placeholder="Dukaan ka naam (e.g. Al-Madina Kiryana Store)"
+              placeholder="Store name (e.g. Al-Madina Kiryana Store)"
               style={{
                 width: "100%",
-                padding: "0.6rem 0.8rem",
-                borderRadius: 8,
-                border: "1px solid rgba(0,0,0,0.15)",
+                padding: "0.75rem 1rem",
+                borderRadius: 12,
+                border: "1.5px solid rgba(0,0,0,0.12)",
+                fontSize: "0.9375rem",
+                transition: "all 0.2s",
+              }}
+              onFocus={(e) => {
+                e.currentTarget.style.borderColor = "#0052FF";
+                e.currentTarget.style.boxShadow = "0 0 0 3px rgba(0, 82, 255, 0.1)";
+              }}
+              onBlur={(e) => {
+                e.currentTarget.style.borderColor = "rgba(0,0,0,0.12)";
+                e.currentTarget.style.boxShadow = "none";
               }}
             />
           </div>
@@ -175,12 +202,22 @@ export default function SignupPage() {
               type="text"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              placeholder="App ke liye username (e.g. ahmedkhata)"
+              placeholder="Username for the app (e.g. ahmedkhata)"
               style={{
                 width: "100%",
-                padding: "0.6rem 0.8rem",
-                borderRadius: 8,
-                border: "1px solid rgba(0,0,0,0.15)",
+                padding: "0.75rem 1rem",
+                borderRadius: 12,
+                border: "1.5px solid rgba(0,0,0,0.12)",
+                fontSize: "0.9375rem",
+                transition: "all 0.2s",
+              }}
+              onFocus={(e) => {
+                e.currentTarget.style.borderColor = "#0052FF";
+                e.currentTarget.style.boxShadow = "0 0 0 3px rgba(0, 82, 255, 0.1)";
+              }}
+              onBlur={(e) => {
+                e.currentTarget.style.borderColor = "rgba(0,0,0,0.12)";
+                e.currentTarget.style.boxShadow = "none";
               }}
             />
           </div>
@@ -200,9 +237,19 @@ export default function SignupPage() {
               placeholder="Email for updates and backup"
               style={{
                 width: "100%",
-                padding: "0.6rem 0.8rem",
-                borderRadius: 8,
-                border: "1px solid rgba(0,0,0,0.15)",
+                padding: "0.75rem 1rem",
+                borderRadius: 12,
+                border: "1.5px solid rgba(0,0,0,0.12)",
+                fontSize: "0.9375rem",
+                transition: "all 0.2s",
+              }}
+              onFocus={(e) => {
+                e.currentTarget.style.borderColor = "#0052FF";
+                e.currentTarget.style.boxShadow = "0 0 0 3px rgba(0, 82, 255, 0.1)";
+              }}
+              onBlur={(e) => {
+                e.currentTarget.style.borderColor = "rgba(0,0,0,0.12)";
+                e.currentTarget.style.boxShadow = "none";
               }}
             />
           </div>
@@ -216,13 +263,31 @@ export default function SignupPage() {
             disabled={isSubmitting}
             style={{
               marginTop: "0.5rem",
-              padding: "0.75rem 1.25rem",
-              borderRadius: 999,
+              padding: "0.875rem 2rem",
+              borderRadius: 12,
               border: "none",
-              background: "#0f70ff",
+              background: "#0052FF",
               color: "white",
               fontWeight: 600,
+              fontSize: "1rem",
               cursor: isSubmitting ? "wait" : "pointer",
+              boxShadow: "0 4px 12px rgba(0, 82, 255, 0.3)",
+              transition: "all 0.2s",
+              opacity: isSubmitting ? 0.6 : 1,
+            }}
+            onMouseEnter={(e) => {
+              if (!isSubmitting) {
+                e.currentTarget.style.background = "#0040CC";
+                e.currentTarget.style.transform = "translateY(-1px)";
+                e.currentTarget.style.boxShadow = "0 6px 16px rgba(0, 82, 255, 0.4)";
+              }
+            }}
+            onMouseLeave={(e) => {
+              if (!isSubmitting) {
+                e.currentTarget.style.background = "#0052FF";
+                e.currentTarget.style.transform = "translateY(0)";
+                e.currentTarget.style.boxShadow = "0 4px 12px rgba(0, 82, 255, 0.3)";
+              }
             }}
           >
             {isSubmitting ? "Creating profile..." : "Finish signup"}

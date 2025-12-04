@@ -229,8 +229,7 @@ export default function NFTPage() {
     <main
       style={{
         minHeight: "100vh",
-        background:
-          "radial-gradient(circle at top left, #e0f0ff 0, transparent 45%), radial-gradient(circle at bottom right, #fbe7ff 0, transparent 40%), #f7f9fc",
+        background: "linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)",
         padding: "2rem 1.5rem 3rem",
       }}
     >
@@ -255,10 +254,14 @@ export default function NFTPage() {
             <h1
               style={{
                 fontSize: "2rem",
-                fontWeight: "bold",
-                color: "#1a1a1a",
+                fontWeight: 700,
                 margin: 0,
                 marginBottom: "0.5rem",
+                fontFamily: "var(--font-space-grotesk), sans-serif",
+                background: "linear-gradient(135deg, #0052FF 0%, #00D4FF 100%)",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+                backgroundClip: "text",
               }}
             >
               🎉 Achievement NFTs
@@ -359,7 +362,7 @@ export default function NFTPage() {
               href="/loans"
               style={{
                 padding: "0.75rem 2rem",
-                background: "#4F46E5",
+                background: "#0052FF",
                 color: "white",
                 borderRadius: "8px",
                 textDecoration: "none",
@@ -408,7 +411,7 @@ export default function NFTPage() {
                     width: "100%",
                     height: "300px",
                     background:
-                      "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                      "linear-gradient(135deg, #0052FF 0%, #00D4FF 100%)",
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",

@@ -496,8 +496,7 @@ export default function DashboardPage() {
     <main
       style={{
         minHeight: "100vh",
-        background:
-          "radial-gradient(circle at top left, #e0f0ff 0, transparent 45%), radial-gradient(circle at bottom right, #fbe7ff 0, transparent 40%), #f7f9fc",
+        background: "linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)",
         padding: "2rem 1.5rem 3rem",
         display: "flex",
         flexDirection: "column",
@@ -513,7 +512,7 @@ export default function DashboardPage() {
             padding: "0.75rem 1.25rem",
             background: "white",
             borderRadius: 12,
-            boxShadow: "0 4px 12px rgba(15,112,255,0.08)",
+            boxShadow: "0 4px 12px rgba(0,82,255,0.08)",
             fontSize: "0.9rem",
             color: "rgba(0,0,0,0.7)",
             display: "flex",
@@ -530,7 +529,7 @@ export default function DashboardPage() {
             href="/nft"
             style={{
               padding: "0.5rem 1rem",
-              background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+              background: "linear-gradient(135deg, #0052FF 0%, #00D4FF 100%)",
               color: "white",
               borderRadius: "8px",
               textDecoration: "none",
@@ -576,7 +575,7 @@ export default function DashboardPage() {
             background: "white",
             borderRadius: 20,
             padding: "1.75rem 2rem",
-            boxShadow: "0 20px 45px rgba(15,112,255,0.08)",
+            boxShadow: "0 20px 45px rgba(0,82,255,0.08)",
           }}
         >
           <header
@@ -588,13 +587,18 @@ export default function DashboardPage() {
             }}
           >
             <div>
-              <h1
-                style={{
-                  fontSize: "1.4rem",
-                  fontWeight: 700,
-                }}
-              >
-              Khata dashboard
+            <h1
+              style={{
+                fontSize: "1.5rem",
+                fontWeight: 700,
+                fontFamily: "var(--font-space-grotesk), sans-serif",
+                background: "linear-gradient(135deg, #0052FF 0%, #00D4FF 100%)",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+                backgroundClip: "text",
+              }}
+            >
+              Ledger dashboard
             </h1>
             <p
               style={{
@@ -608,20 +612,33 @@ export default function DashboardPage() {
             <Link
               href="/loans"
               style={{
-                fontSize: "0.8rem",
-                color: "#0f70ff",
+                fontSize: "0.9375rem",
+                color: "#0052FF",
                 textDecoration: "none",
-                marginTop: "0.5rem",
-                display: "inline-block",
+                marginTop: "0.75rem",
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "0.5rem",
+                fontWeight: 600,
+                padding: "0.5rem 1rem",
+                borderRadius: "8px",
+                background: "rgba(0, 82, 255, 0.08)",
+                border: "1.5px solid rgba(0, 82, 255, 0.2)",
+                transition: "all 0.2s",
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.textDecoration = "underline";
+                e.currentTarget.style.background = "rgba(0, 82, 255, 0.12)";
+                e.currentTarget.style.borderColor = "rgba(0, 82, 255, 0.3)";
+                e.currentTarget.style.transform = "translateY(-1px)";
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.textDecoration = "none";
+                e.currentTarget.style.background = "rgba(0, 82, 255, 0.08)";
+                e.currentTarget.style.borderColor = "rgba(0, 82, 255, 0.2)";
+                e.currentTarget.style.transform = "translateY(0)";
               }}
             >
-              → View pending loans sent to you
+              <span>→</span>
+              <span>View pending loans sent to you</span>
             </Link>
             </div>
             <div
@@ -663,6 +680,7 @@ export default function DashboardPage() {
                   fontSize: "1.4rem",
                   fontWeight: 700,
                   marginTop: 4,
+                  color: "rgba(0, 0, 0, 0.9)",
                 }}
               >
                 {partnerCount}
@@ -710,6 +728,7 @@ export default function DashboardPage() {
                   fontSize: "1.4rem",
                   fontWeight: 700,
                   marginTop: 4,
+                  color: "rgba(0, 0, 0, 0.9)",
                 }}
               >
                 {loans.length}
@@ -724,9 +743,11 @@ export default function DashboardPage() {
           >
             <h2
               style={{
-                fontSize: "1rem",
-                fontWeight: 600,
+                fontSize: "1.25rem",
+                fontWeight: 700,
                 marginBottom: "0.75rem",
+                fontFamily: "var(--font-space-grotesk), sans-serif",
+                color: "rgba(0, 0, 0, 0.9)",
               }}
             >
               Recent loans
@@ -771,11 +792,13 @@ export default function DashboardPage() {
                       >
                         {loan.loanType === "taken" ? (
                           <>
-                            {loan.ownerName}{" "}
+                            <span style={{ fontWeight: 700, color: "rgba(0, 0, 0, 0.9)", fontSize: "0.95rem" }}>
+                              {loan.ownerName}
+                            </span>{" "}
                             <span
                               style={{
                                 fontSize: "0.8rem",
-                                color: "rgba(0,0,0,0.55)",
+                                color: "rgba(0,0,0,0.6)",
                               }}
                             >
                               (@{loan.ownerUsername})
@@ -795,11 +818,13 @@ export default function DashboardPage() {
                           </>
                         ) : (
                           <>
-                            {loan.partnerName}{" "}
+                            <span style={{ fontWeight: 700, color: "rgba(0, 0, 0, 0.9)", fontSize: "0.95rem" }}>
+                              {loan.partnerName}
+                            </span>{" "}
                             <span
                               style={{
                                 fontSize: "0.8rem",
-                                color: "rgba(0,0,0,0.55)",
+                                color: "rgba(0,0,0,0.6)",
                               }}
                             >
                               (@{loan.partnerUsername})
@@ -891,7 +916,7 @@ export default function DashboardPage() {
                             target="_blank"
                             rel="noopener noreferrer"
                             style={{
-                              color: "#0f70ff",
+                              color: "#0052FF",
                               textDecoration: "none",
                               fontFamily: "monospace",
                             }}
@@ -936,14 +961,16 @@ export default function DashboardPage() {
               background: "white",
               borderRadius: 20,
               padding: "1.5rem 1.75rem",
-              boxShadow: "0 16px 40px rgba(15,112,255,0.08)",
+              boxShadow: "0 16px 40px rgba(0,82,255,0.08)",
             }}
           >
             <h2
               style={{
-                fontSize: "1rem",
-                fontWeight: 600,
+                fontSize: "1.25rem",
+                fontWeight: 700,
                 marginBottom: "0.75rem",
+                fontFamily: "var(--font-space-grotesk), sans-serif",
+                color: "rgba(0, 0, 0, 0.9)",
               }}
             >
               Add partner
@@ -970,10 +997,11 @@ export default function DashboardPage() {
                 onChange={(e) => setNewPartnerUsername(e.target.value)}
                 style={{
                   width: "100%",
-                  padding: "0.6rem 0.8rem",
-                  borderRadius: 10,
-                  border: "1px solid rgba(0,0,0,0.15)",
-                  fontSize: "0.9rem",
+                  padding: "0.75rem 1rem",
+                  borderRadius: 12,
+                  border: "1.5px solid rgba(0,0,0,0.12)",
+                  fontSize: "0.9375rem",
+                  color: "rgba(0, 0, 0, 0.9)",
                 }}
               />
 
@@ -996,7 +1024,7 @@ export default function DashboardPage() {
                   padding: "0.6rem 1rem",
                   borderRadius: 999,
                   border: "none",
-                  background: "#0f70ff",
+                  background: "#0052FF",
                   color: "white",
                   fontWeight: 600,
                   fontSize: "0.9rem",
@@ -1008,355 +1036,329 @@ export default function DashboardPage() {
             </form>
           </div>
 
+          {/* Audio Recording Section */}
           <div
             style={{
               background: "white",
               borderRadius: 20,
               padding: "1.5rem 1.75rem",
-              boxShadow: "0 16px 40px rgba(15,112,255,0.08)",
+              boxShadow: "0 16px 40px rgba(0,82,255,0.08)",
             }}
           >
-            <h2
+            <div
               style={{
-                fontSize: "1rem",
-                fontWeight: 600,
-                marginBottom: "0.75rem",
+                padding: "1.25rem",
+                borderRadius: "12px",
+                background: "linear-gradient(135deg, rgba(0, 82, 255, 0.08) 0%, rgba(0, 212, 255, 0.08) 100%)",
+                border: "1.5px solid rgba(0, 82, 255, 0.2)",
               }}
             >
-              Add loan for partner
-            </h2>
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "0.75rem",
+                }}
+              >
+                <div>
+                  <h3
+                    style={{
+                      fontSize: "0.9375rem",
+                      fontWeight: 600,
+                      marginBottom: "0.25rem",
+                      color: "rgba(0, 0, 0, 0.8)",
+                    }}
+                  >
+                    Use AI to save loans in natural language
+                  </h3>
+                  <p
+                    style={{
+                      fontSize: "0.8125rem",
+                      color: "rgba(0, 0, 0, 0.6)",
+                      margin: 0,
+                      lineHeight: "1.4",
+                    }}
+                  >
+                    Speak in Urdu to record loan details. AI will automatically extract amount, partner, dates, and description.
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={async () => {
+                    if (isAudioRecording) {
+                      // Stop recording
+                      if (mediaRecorder && mediaRecorder.state !== "inactive") {
+                        mediaRecorder.stop();
+                      }
+                      setIsAudioRecording(false);
+                    } else {
+                      // Start recording
+                      try {
+                        const stream = await navigator.mediaDevices.getUserMedia({
+                          audio: {
+                            echoCancellation: true,
+                            noiseSuppression: true,
+                            sampleRate: 44100,
+                          },
+                        });
+                        
+                        // Try to use a format that's more widely supported
+                        // Use mimeType if available, otherwise let browser choose
+                        let mimeType = "audio/webm";
+                        if (MediaRecorder.isTypeSupported("audio/webm;codecs=opus")) {
+                          mimeType = "audio/webm;codecs=opus";
+                        } else if (MediaRecorder.isTypeSupported("audio/mp4")) {
+                          mimeType = "audio/mp4";
+                        } else if (MediaRecorder.isTypeSupported("audio/wav")) {
+                          mimeType = "audio/wav";
+                        }
+                        
+                        const recorder = new MediaRecorder(stream, {
+                          mimeType: mimeType,
+                        });
+                        const chunks: Blob[] = [];
+                        
+                        console.log("Recording with mimeType:", mimeType);
+                        
+                        // Store mimeType for use in onstop
+                        const recordedMimeType = mimeType;
 
-            <form
-              onSubmit={handleAddLoan}
-              style={{
-                display: "grid",
-                gap: "0.75rem",
-              }}
-            >
-              <div>
-                <label
-                  htmlFor="partner"
-                  style={{
-                    display: "block",
-                    fontSize: "0.8rem",
-                    marginBottom: 4,
+                        recorder.ondataavailable = (e) => {
+                          if (e.data.size > 0) {
+                            chunks.push(e.data);
+                          }
+                        };
+
+                        recorder.onstop = async () => {
+                          // Determine file extension based on recordedMimeType
+                          let fileExtension = "webm";
+                          let fileName = "recording.webm";
+                          if (recordedMimeType.includes("mp4")) {
+                            fileExtension = "mp4";
+                            fileName = "recording.mp4";
+                          } else if (recordedMimeType.includes("wav")) {
+                            fileExtension = "wav";
+                            fileName = "recording.wav";
+                          }
+                            
+                          const audioBlob = new Blob(chunks, {
+                            type: recordedMimeType,
+                          });
+                            
+                          console.log("Audio blob created:", {
+                            size: audioBlob.size,
+                            type: audioBlob.type,
+                            fileName: fileName,
+                          });
+                            
+                          // Stop all tracks
+                          stream.getTracks().forEach((track) => track.stop());
+
+                          // Transcribe audio
+                          setTranscribing(true);
+                          setTranscribedText("");
+                          
+                          try {
+                            const formData = new FormData();
+                            formData.append("file", audioBlob, fileName);
+                            formData.append("model", "scribe");
+                            formData.append("language", "ur");
+                            formData.append("domain", "phone-commerce");
+                            
+                            console.log("Sending audio to transcription API...");
+
+                            const res = await fetch("/api/transcribe", {
+                              method: "POST",
+                              body: formData,
+                            });
+
+                            let data;
+                            try {
+                              data = await res.json();
+                            } catch (parseError) {
+                              const text = await res.text();
+                              console.error("Failed to parse response:", text);
+                              alert(`Transcription failed: Invalid response from server`);
+                              return;
+                            }
+                              
+                            console.log("API Response status:", res.status);
+                            console.log("API Response data:", data);
+                              
+                            if (res.ok && data.success && data.text) {
+                              setTranscribedText(data.text);
+                              console.log("Transcribed text:", data.text);
+                              console.log("Full API response:", data);
+                              
+                              // Extract loan information using OpenAI
+                              setExtracting(true);
+                              try {
+                                const extractRes = await fetch("/api/extract-loan-info", {
+                                  method: "POST",
+                                  headers: {
+                                    "Content-Type": "application/json",
+                                  },
+                                  body: JSON.stringify({ text: data.text }),
+                                });
+                                
+                                const extractData = await extractRes.json();
+                                
+                                if (extractRes.ok && extractData.success && extractData.loanInfo) {
+                                  const info = extractData.loanInfo;
+                                  console.log("Extracted loan info:", info);
+                                  
+                                  // Auto-fill form fields (handle null values from OpenAI)
+                                  if (info.loanAmount !== null && info.loanAmount !== undefined) {
+                                    setLoanAmount(info.loanAmount.toString());
+                                  }
+                                  if (info.description !== null && info.description !== undefined) {
+                                    setLoanDescription(info.description);
+                                  }
+                                  if (info.loanDate !== null && info.loanDate !== undefined) {
+                                    setLoanDate(info.loanDate);
+                                  }
+                                  if (info.expectedReturnDate !== null && info.expectedReturnDate !== undefined) {
+                                    setLoanExpectedReturn(info.expectedReturnDate);
+                                  }
+                                  
+                                  // Try to find partner by name
+                                  if (info.partnerName !== null && info.partnerName !== undefined) {
+                                    const foundPartner = partners.find(
+                                      (p) =>
+                                        p.name.toLowerCase().includes(info.partnerName!.toLowerCase()) ||
+                                        p.username.toLowerCase().includes(info.partnerName!.toLowerCase())
+                                    );
+                                    if (foundPartner) {
+                                      setLoanPartnerId(foundPartner.id);
+                                      console.log("Found partner:", foundPartner.name);
+                                    } else {
+                                      console.log("Partner not found:", info.partnerName);
+                                      alert(`Partner "${info.partnerName}" not found. Please select manually.`);
+                                    }
+                                  }
+                                } else {
+                                  console.error("Extraction error:", extractData);
+                                }
+                              } catch (extractErr: any) {
+                                console.error("Error extracting loan info:", extractErr);
+                                // Don't fail the whole process if extraction fails
+                              } finally {
+                                setExtracting(false);
+                              }
+                            } else {
+                              const errorMsg = data?.error || data?.message || `HTTP ${res.status}: ${res.statusText}`;
+                              console.error("Transcription error:", {
+                                status: res.status,
+                                statusText: res.statusText,
+                                data: data,
+                                error: errorMsg,
+                              });
+                              alert(`Transcription failed: ${errorMsg}${data?.hint ? `\n\nHint: ${data.hint}` : ""}`);
+                            }
+                          } catch (err: any) {
+                            console.error("Error transcribing:", err);
+                            alert(`Error: ${err.message}`);
+                          } finally {
+                            setTranscribing(false);
+                          }
+                        };
+
+                        recorder.start();
+                        setMediaRecorder(recorder);
+                        setIsAudioRecording(true);
+                      } catch (err: any) {
+                        console.error("Error accessing microphone:", err);
+                        alert("Microphone access denied or not available");
+                      }
+                    }
                   }}
-                >
-                  Partner
-                </label>
-                <select
-                  id="partner"
-                  value={loanPartnerId}
-                  onChange={(e) => setLoanPartnerId(e.target.value)}
                   style={{
+                    padding: "0.75rem 1.5rem",
+                    borderRadius: "12px",
+                    border: "none",
+                    background: isAudioRecording ? "#dc2626" : "#0052FF",
+                    color: "white",
+                    fontWeight: 600,
+                    fontSize: "0.9375rem",
+                    cursor: "pointer",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    gap: "0.5rem",
                     width: "100%",
-                    padding: "0.6rem 0.8rem",
-                    borderRadius: 10,
-                    border: "1px solid rgba(0,0,0,0.15)",
-                    fontSize: "0.9rem",
-                    backgroundColor: "white",
+                    boxShadow: isAudioRecording ? "0 4px 12px rgba(220, 38, 38, 0.3)" : "0 4px 12px rgba(0, 82, 255, 0.3)",
+                    transition: "all 0.2s",
+                  }}
+                  onMouseEnter={(e) => {
+                    if (!isAudioRecording) {
+                      e.currentTarget.style.background = "#0040CC";
+                      e.currentTarget.style.transform = "translateY(-1px)";
+                      e.currentTarget.style.boxShadow = "0 6px 16px rgba(0, 82, 255, 0.4)";
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    if (!isAudioRecording) {
+                      e.currentTarget.style.background = "#0052FF";
+                      e.currentTarget.style.transform = "translateY(0)";
+                      e.currentTarget.style.boxShadow = "0 4px 12px rgba(0, 82, 255, 0.3)";
+                    }
                   }}
                 >
-                  <option value="">
-                    {partners.length === 0
-                      ? "Pehle partner add karein"
-                      : "Partner select karein"}
-                  </option>
-                  {partners.map((p) => (
-                    <option key={p.id} value={p.id}>
-                      {p.name} (@{p.username})
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div>
-                <label
-                  htmlFor="amount"
-                  style={{
-                    display: "block",
-                    fontSize: "0.8rem",
-                    marginBottom: 4,
-                  }}
-                >
-                  Amount (PKR)
-                </label>
-                <input
-                  id="amount"
-                  type="number"
-                  min="0"
-                  step="1"
-                  value={loanAmount}
-                  onChange={(e) => setLoanAmount(e.target.value)}
-                  placeholder="e.g. 200"
-                  style={{
-                    width: "100%",
-                    padding: "0.6rem 0.8rem",
-                    borderRadius: 10,
-                    border: "1px solid rgba(0,0,0,0.15)",
-                    fontSize: "0.9rem",
-                  }}
-                />
-              </div>
-
-              {/* Audio Recording Section */}
-              <div>
-                <label
-                  style={{
-                    display: "block",
-                    fontSize: "0.8rem",
-                    marginBottom: 4,
-                  }}
-                >
-                  Audio Input (Urdu) - یا تو لکھیں یا بول کر ریکارڈ کریں
-                </label>
+                  {isAudioRecording ? (
+                    <>
+                      <span>⏹️</span>
+                      <span>Stop Recording</span>
+                    </>
+                  ) : (
+                    <>
+                      <span>🎤</span>
+                      <span>Start Recording</span>
+                    </>
+                  )}
+                </button>
+                
                 <div
                   style={{
                     display: "flex",
-                    gap: "0.5rem",
+                    gap: "0.75rem",
                     alignItems: "center",
-                    marginBottom: "0.5rem",
+                    justifyContent: "center",
+                    flexWrap: "wrap",
                   }}
                 >
-                  <button
-                    type="button"
-                    onClick={async () => {
-                      if (isAudioRecording) {
-                        // Stop recording
-                        if (mediaRecorder && mediaRecorder.state !== "inactive") {
-                          mediaRecorder.stop();
-                        }
-                        setIsAudioRecording(false);
-                      } else {
-                        // Start recording
-                        try {
-                          const stream = await navigator.mediaDevices.getUserMedia({
-                            audio: {
-                              echoCancellation: true,
-                              noiseSuppression: true,
-                              sampleRate: 44100,
-                            },
-                          });
-                          
-                          // Try to use a format that's more widely supported
-                          // Use mimeType if available, otherwise let browser choose
-                          let mimeType = "audio/webm";
-                          if (MediaRecorder.isTypeSupported("audio/webm;codecs=opus")) {
-                            mimeType = "audio/webm;codecs=opus";
-                          } else if (MediaRecorder.isTypeSupported("audio/mp4")) {
-                            mimeType = "audio/mp4";
-                          } else if (MediaRecorder.isTypeSupported("audio/wav")) {
-                            mimeType = "audio/wav";
-                          }
-                          
-                          const recorder = new MediaRecorder(stream, {
-                            mimeType: mimeType,
-                          });
-                          const chunks: Blob[] = [];
-                          
-                          console.log("Recording with mimeType:", mimeType);
-                          
-                          // Store mimeType for use in onstop
-                          const recordedMimeType = mimeType;
-
-                          recorder.ondataavailable = (e) => {
-                            if (e.data.size > 0) {
-                              chunks.push(e.data);
-                            }
-                          };
-
-                          recorder.onstop = async () => {
-                            // Determine file extension based on recordedMimeType
-                            let fileExtension = "webm";
-                            let fileName = "recording.webm";
-                            if (recordedMimeType.includes("mp4")) {
-                              fileExtension = "mp4";
-                              fileName = "recording.mp4";
-                            } else if (recordedMimeType.includes("wav")) {
-                              fileExtension = "wav";
-                              fileName = "recording.wav";
-                            }
-                            
-                            const audioBlob = new Blob(chunks, {
-                              type: recordedMimeType,
-                            });
-                            
-                            console.log("Audio blob created:", {
-                              size: audioBlob.size,
-                              type: audioBlob.type,
-                              fileName: fileName,
-                            });
-                            
-                            // Stop all tracks
-                            stream.getTracks().forEach((track) => track.stop());
-
-                            // Transcribe audio
-                            setTranscribing(true);
-                            setTranscribedText("");
-                            
-                            try {
-                              const formData = new FormData();
-                              formData.append("file", audioBlob, fileName);
-                              formData.append("model", "scribe");
-                              formData.append("language", "ur");
-                              formData.append("domain", "phone-commerce");
-                              
-                              console.log("Sending audio to transcription API...");
-
-                              const res = await fetch("/api/transcribe", {
-                                method: "POST",
-                                body: formData,
-                              });
-
-                              let data;
-                              try {
-                                data = await res.json();
-                              } catch (parseError) {
-                                const text = await res.text();
-                                console.error("Failed to parse response:", text);
-                                alert(`Transcription failed: Invalid response from server`);
-                                return;
-                              }
-                              
-                              console.log("API Response status:", res.status);
-                              console.log("API Response data:", data);
-                              
-                              if (res.ok && data.success && data.text) {
-                                setTranscribedText(data.text);
-                                console.log("Transcribed text:", data.text);
-                                console.log("Full API response:", data);
-                                
-                                // Extract loan information using OpenAI
-                                setExtracting(true);
-                                try {
-                                  const extractRes = await fetch("/api/extract-loan-info", {
-                                    method: "POST",
-                                    headers: {
-                                      "Content-Type": "application/json",
-                                    },
-                                    body: JSON.stringify({ text: data.text }),
-                                  });
-                                  
-                                  const extractData = await extractRes.json();
-                                  
-                                  if (extractRes.ok && extractData.success && extractData.loanInfo) {
-                                    const info = extractData.loanInfo;
-                                    console.log("Extracted loan info:", info);
-                                    
-                                    // Auto-fill form fields (handle null values from OpenAI)
-                                    if (info.loanAmount !== null && info.loanAmount !== undefined) {
-                                      setLoanAmount(info.loanAmount.toString());
-                                    }
-                                    if (info.description !== null && info.description !== undefined) {
-                                      setLoanDescription(info.description);
-                                    }
-                                    if (info.loanDate !== null && info.loanDate !== undefined) {
-                                      setLoanDate(info.loanDate);
-                                    }
-                                    if (info.expectedReturnDate !== null && info.expectedReturnDate !== undefined) {
-                                      setLoanExpectedReturn(info.expectedReturnDate);
-                                    }
-                                    
-                                    // Try to find partner by name
-                                    if (info.partnerName !== null && info.partnerName !== undefined) {
-                                      const foundPartner = partners.find(
-                                        (p) =>
-                                          p.name.toLowerCase().includes(info.partnerName!.toLowerCase()) ||
-                                          p.username.toLowerCase().includes(info.partnerName!.toLowerCase())
-                                      );
-                                      if (foundPartner) {
-                                        setLoanPartnerId(foundPartner.id);
-                                        console.log("Found partner:", foundPartner.name);
-                                      } else {
-                                        console.log("Partner not found:", info.partnerName);
-                                        alert(`Partner "${info.partnerName}" not found. Please select manually.`);
-                                      }
-                                    }
-                                  } else {
-                                    console.error("Extraction error:", extractData);
-                                  }
-                                } catch (extractErr: any) {
-                                  console.error("Error extracting loan info:", extractErr);
-                                  // Don't fail the whole process if extraction fails
-                                } finally {
-                                  setExtracting(false);
-                                }
-                              } else {
-                                const errorMsg = data?.error || data?.message || `HTTP ${res.status}: ${res.statusText}`;
-                                console.error("Transcription error:", {
-                                  status: res.status,
-                                  statusText: res.statusText,
-                                  data: data,
-                                  error: errorMsg,
-                                });
-                                alert(`Transcription failed: ${errorMsg}${data?.hint ? `\n\nHint: ${data.hint}` : ""}`);
-                              }
-                            } catch (err: any) {
-                              console.error("Error transcribing:", err);
-                              alert(`Error: ${err.message}`);
-                            } finally {
-                              setTranscribing(false);
-                            }
-                          };
-
-                          recorder.start();
-                          setMediaRecorder(recorder);
-                          setIsAudioRecording(true);
-                        } catch (err: any) {
-                          console.error("Error accessing microphone:", err);
-                          alert("Microphone access denied or not available");
-                        }
-                      }
-                    }}
-                    style={{
-                      padding: "0.6rem 1rem",
-                      borderRadius: "8px",
-                      border: "none",
-                      background: isAudioRecording ? "#dc2626" : "#4F46E5",
-                      color: "white",
-                      fontWeight: 600,
-                      fontSize: "0.85rem",
-                      cursor: "pointer",
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "0.5rem",
-                    }}
-                  >
-                    {isAudioRecording ? (
-                      <>
-                        <span>⏹️</span>
-                        <span>Stop Recording</span>
-                      </>
-                    ) : (
-                      <>
-                        <span>🎤</span>
-                        <span>Record Audio</span>
-                      </>
-                    )}
-                  </button>
-                  
                   {transcribing && (
-                    <span style={{ fontSize: "0.85rem", color: "rgba(0,0,0,0.6)" }}>
-                      Transcribing...
+                    <span style={{ fontSize: "0.8125rem", color: "rgba(0,0,0,0.65)", fontWeight: 500 }}>
+                      🎙️ Transcribing...
                     </span>
                   )}
                   
                   {extracting && (
-                    <span style={{ fontSize: "0.85rem", color: "rgba(0,0,0,0.6)" }}>
-                      Extracting loan info...
+                    <span style={{ fontSize: "0.8125rem", color: "rgba(0,0,0,0.65)", fontWeight: 500 }}>
+                      🤖 Extracting loan info...
                     </span>
                   )}
                   
                   {isAudioRecording && (
                     <div
                       style={{
-                        width: "12px",
-                        height: "12px",
-                        borderRadius: "50%",
-                        background: "#dc2626",
-                        animation: "pulse 1.5s infinite",
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "0.5rem",
                       }}
-                    />
+                    >
+                      <div
+                        style={{
+                          width: "10px",
+                          height: "10px",
+                          borderRadius: "50%",
+                          background: "#dc2626",
+                          animation: "pulse 1.5s infinite",
+                        }}
+                      />
+                      <span style={{ fontSize: "0.8125rem", color: "#dc2626", fontWeight: 500 }}>
+                        Recording...
+                      </span>
+                    </div>
                   )}
                 </div>
                 
@@ -1392,14 +1394,117 @@ export default function DashboardPage() {
                   </div>
                 )}
               </div>
+            </div>
+          </div>
+
+          <div
+            style={{
+              background: "white",
+              borderRadius: 20,
+              padding: "1.5rem 1.75rem",
+              boxShadow: "0 16px 40px rgba(0,82,255,0.08)",
+            }}
+          >
+            <h2
+              style={{
+                fontSize: "1.25rem",
+                fontWeight: 700,
+                marginBottom: "0.75rem",
+                fontFamily: "var(--font-space-grotesk), sans-serif",
+                color: "rgba(0, 0, 0, 0.9)",
+              }}
+            >
+              Add loan for partner
+            </h2>
+
+            <form
+              onSubmit={handleAddLoan}
+              style={{
+                display: "grid",
+                gap: "0.75rem",
+              }}
+            >
+              <div>
+                <label
+                  htmlFor="partner"
+                  style={{
+                    display: "block",
+                    fontSize: "0.9375rem",
+                    fontWeight: 600,
+                    marginBottom: 6,
+                    color: "rgba(0, 0, 0, 0.85)",
+                  }}
+                >
+                  Partner
+                </label>
+                <select
+                  id="partner"
+                  value={loanPartnerId}
+                  onChange={(e) => setLoanPartnerId(e.target.value)}
+                  style={{
+                    width: "100%",
+                    padding: "0.75rem 1rem",
+                    borderRadius: 12,
+                    border: "1.5px solid rgba(0,0,0,0.12)",
+                    fontSize: "0.9375rem",
+                    backgroundColor: "white",
+                    color: "rgba(0, 0, 0, 0.9)",
+                  }}
+                >
+                  <option value="">
+                    {partners.length === 0
+                      ? "Pehle partner add karein"
+                      : "Partner select karein"}
+                  </option>
+                  {partners.map((p) => (
+                    <option key={p.id} value={p.id}>
+                      {p.name} (@{p.username})
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label
+                  htmlFor="amount"
+                  style={{
+                    display: "block",
+                    fontSize: "0.9375rem",
+                    fontWeight: 600,
+                    marginBottom: 6,
+                    color: "rgba(0, 0, 0, 0.85)",
+                  }}
+                >
+                  Amount (PKR)
+                </label>
+                <input
+                  id="amount"
+                  type="number"
+                  min="0"
+                  step="1"
+                  value={loanAmount}
+                  onChange={(e) => setLoanAmount(e.target.value)}
+                  placeholder="e.g. 200"
+                  style={{
+                    width: "100%",
+                    padding: "0.75rem 1rem",
+                    borderRadius: 12,
+                    border: "1.5px solid rgba(0,0,0,0.12)",
+                    fontSize: "0.9375rem",
+                    color: "rgba(0, 0, 0, 0.9)",
+                  }}
+                />
+              </div>
 
               <div>
                 <label
                   htmlFor="description"
                   style={{
                     display: "block",
-                    fontSize: "0.8rem",
-                    marginBottom: 4,
+                    fontSize: "0.9375rem",
+                    fontWeight: 600,
+                    marginBottom: 6,
+                    color: "rgba(0, 0, 0, 0.85)",
                   }}
                 >
                   Description (optional)
@@ -1412,10 +1517,11 @@ export default function DashboardPage() {
                   placeholder="e.g. Ahmed ko 200 rupay udhar diye"
                   style={{
                     width: "100%",
-                    padding: "0.6rem 0.8rem",
-                    borderRadius: 10,
-                    border: "1px solid rgba(0,0,0,0.15)",
-                    fontSize: "0.9rem",
+                    padding: "0.75rem 1rem",
+                    borderRadius: 12,
+                    border: "1.5px solid rgba(0,0,0,0.12)",
+                    fontSize: "0.9375rem",
+                    color: "rgba(0, 0, 0, 0.9)",
                   }}
                 />
               </div>
@@ -1432,8 +1538,10 @@ export default function DashboardPage() {
                     htmlFor="loanDate"
                     style={{
                       display: "block",
-                      fontSize: "0.8rem",
-                      marginBottom: 4,
+                      fontSize: "0.9375rem",
+                      fontWeight: 600,
+                      marginBottom: 6,
+                      color: "rgba(0, 0, 0, 0.85)",
                     }}
                   >
                     Loan date
@@ -1445,10 +1553,11 @@ export default function DashboardPage() {
                     onChange={(e) => setLoanDate(e.target.value)}
                     style={{
                       width: "100%",
-                      padding: "0.5rem 0.7rem",
-                      borderRadius: 10,
-                      border: "1px solid rgba(0,0,0,0.15)",
-                      fontSize: "0.9rem",
+                      padding: "0.75rem 1rem",
+                      borderRadius: 12,
+                      border: "1.5px solid rgba(0,0,0,0.12)",
+                      fontSize: "0.9375rem",
+                      color: "rgba(0, 0, 0, 0.9)",
                     }}
                   />
                 </div>
@@ -1457,8 +1566,10 @@ export default function DashboardPage() {
                     htmlFor="expectedReturn"
                     style={{
                       display: "block",
-                      fontSize: "0.8rem",
-                      marginBottom: 4,
+                      fontSize: "0.9375rem",
+                      fontWeight: 600,
+                      marginBottom: 6,
+                      color: "rgba(0, 0, 0, 0.85)",
                     }}
                   >
                     Expected return date
@@ -1470,10 +1581,11 @@ export default function DashboardPage() {
                     onChange={(e) => setLoanExpectedReturn(e.target.value)}
                     style={{
                       width: "100%",
-                      padding: "0.5rem 0.7rem",
-                      borderRadius: 10,
-                      border: "1px solid rgba(0,0,0,0.15)",
-                      fontSize: "0.9rem",
+                      padding: "0.75rem 1rem",
+                      borderRadius: 12,
+                      border: "1.5px solid rgba(0,0,0,0.12)",
+                      fontSize: "0.9375rem",
+                      color: "rgba(0, 0, 0, 0.9)",
                     }}
                   />
                 </div>
@@ -1498,7 +1610,7 @@ export default function DashboardPage() {
                   padding: "0.6rem 1rem",
                   borderRadius: 999,
                   border: "none",
-                  background: "#d0312d",
+                  background: "#0052FF",
                   color: "white",
                   fontWeight: 600,
                   fontSize: "0.9rem",

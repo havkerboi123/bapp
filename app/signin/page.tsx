@@ -54,12 +54,14 @@ export default function SigninPage() {
           alignItems: "center",
           justifyContent: "center",
           padding: "2rem",
+          background: "linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)",
         }}
       >
         <div
           style={{
-            fontSize: "0.9rem",
+            fontSize: "0.9375rem",
             color: "rgba(0,0,0,0.65)",
+            fontFamily: "var(--font-inter), sans-serif",
           }}
         >
           Signing in...
