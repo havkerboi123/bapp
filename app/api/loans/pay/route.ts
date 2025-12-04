@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { supabase } from "@/lib/supabaseClient";
+import { mintNFT } from "@/lib/mintNFT";
 
 /**
  * Get loan details for payment
@@ -192,29 +193,26 @@ export async function POST(req: NextRequest) {
         const ethAmount = loan.amount * PKR_TO_ETH_RATE;
         const weiAmount = BigInt(Math.floor(ethAmount * 1e18));
 
-        // Call NFT minting endpoint
-        const mintResponse = await fetch(
-          `${process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"}/api/nft/mint`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              recipientAddress: normalizedWallet,
-              loanId: loan.onchain_loan_id,
-              amount: weiAmount.toString(),
-            }),
-          },
-        );
+        // Call NFT minting function directly (no HTTP call needed)
+        const mintResult = await mintNFT({
+          recipientAddress: normalizedWallet,
+          loanId: loan.onchain_loan_id,
+          amount: weiAmount.toString(),
+        });
 
-        if (mintResponse.ok) {
-          nftMintResult = await mintResponse.json();
+        if (mintResult.success) {
+          nftMintResult = {
+            tokenId: mintResult.tokenId,
+            transactionHash: mintResult.transactionHash,
+            message: mintResult.message,
+          };
           console.log("🎉 Achievement NFT minted successfully!");
-          console.log("NFT Token ID:", nftMintResult.tokenId);
+          console.log("NFT Token ID:", mintResult.tokenId);
+          if (mintResult.alreadyMinted) {
+            console.log("ℹ️ NFT was already minted for this loan");
+          }
         } else {
-          const errorData = await mintResponse.json();
-          console.error("⚠️ Failed to mint NFT:", errorData.error);
+          console.error("⚠️ Failed to mint NFT:", mintResult.error);
           // Don't fail the payment if NFT minting fails
         }
       }
