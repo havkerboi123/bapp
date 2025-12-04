@@ -79,6 +79,13 @@ export default function DashboardPage() {
     Loan[]
   >([]);
   const [recordingLoanId, setRecordingLoanId] = useState<string | null>(null);
+  
+  // Audio recording states
+  const [isAudioRecording, setIsAudioRecording] = useState(false);
+  const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(null);
+  const [transcribedText, setTranscribedText] = useState<string>("");
+  const [transcribing, setTranscribing] = useState(false);
+  const [extracting, setExtracting] = useState(false);
 
   // On-chain recording hooks
   const { writeContract, data: txHash, isPending: isRecording, error: writeError } =
@@ -1090,6 +1097,300 @@ export default function DashboardPage() {
                     fontSize: "0.9rem",
                   }}
                 />
+              </div>
+
+              {/* Audio Recording Section */}
+              <div>
+                <label
+                  style={{
+                    display: "block",
+                    fontSize: "0.8rem",
+                    marginBottom: 4,
+                  }}
+                >
+                  Audio Input (Urdu) - یا تو لکھیں یا بول کر ریکارڈ کریں
+                </label>
+                <div
+                  style={{
+                    display: "flex",
+                    gap: "0.5rem",
+                    alignItems: "center",
+                    marginBottom: "0.5rem",
+                  }}
+                >
+                  <button
+                    type="button"
+                    onClick={async () => {
+                      if (isAudioRecording) {
+                        // Stop recording
+                        if (mediaRecorder && mediaRecorder.state !== "inactive") {
+                          mediaRecorder.stop();
+                        }
+                        setIsAudioRecording(false);
+                      } else {
+                        // Start recording
+                        try {
+                          const stream = await navigator.mediaDevices.getUserMedia({
+                            audio: {
+                              echoCancellation: true,
+                              noiseSuppression: true,
+                              sampleRate: 44100,
+                            },
+                          });
+                          
+                          // Try to use a format that's more widely supported
+                          // Use mimeType if available, otherwise let browser choose
+                          let mimeType = "audio/webm";
+                          if (MediaRecorder.isTypeSupported("audio/webm;codecs=opus")) {
+                            mimeType = "audio/webm;codecs=opus";
+                          } else if (MediaRecorder.isTypeSupported("audio/mp4")) {
+                            mimeType = "audio/mp4";
+                          } else if (MediaRecorder.isTypeSupported("audio/wav")) {
+                            mimeType = "audio/wav";
+                          }
+                          
+                          const recorder = new MediaRecorder(stream, {
+                            mimeType: mimeType,
+                          });
+                          const chunks: Blob[] = [];
+                          
+                          console.log("Recording with mimeType:", mimeType);
+                          
+                          // Store mimeType for use in onstop
+                          const recordedMimeType = mimeType;
+
+                          recorder.ondataavailable = (e) => {
+                            if (e.data.size > 0) {
+                              chunks.push(e.data);
+                            }
+                          };
+
+                          recorder.onstop = async () => {
+                            // Determine file extension based on recordedMimeType
+                            let fileExtension = "webm";
+                            let fileName = "recording.webm";
+                            if (recordedMimeType.includes("mp4")) {
+                              fileExtension = "mp4";
+                              fileName = "recording.mp4";
+                            } else if (recordedMimeType.includes("wav")) {
+                              fileExtension = "wav";
+                              fileName = "recording.wav";
+                            }
+                            
+                            const audioBlob = new Blob(chunks, {
+                              type: recordedMimeType,
+                            });
+                            
+                            console.log("Audio blob created:", {
+                              size: audioBlob.size,
+                              type: audioBlob.type,
+                              fileName: fileName,
+                            });
+                            
+                            // Stop all tracks
+                            stream.getTracks().forEach((track) => track.stop());
+
+                            // Transcribe audio
+                            setTranscribing(true);
+                            setTranscribedText("");
+                            
+                            try {
+                              const formData = new FormData();
+                              formData.append("file", audioBlob, fileName);
+                              formData.append("model", "scribe");
+                              formData.append("language", "ur");
+                              formData.append("domain", "phone-commerce");
+                              
+                              console.log("Sending audio to transcription API...");
+
+                              const res = await fetch("/api/transcribe", {
+                                method: "POST",
+                                body: formData,
+                              });
+
+                              let data;
+                              try {
+                                data = await res.json();
+                              } catch (parseError) {
+                                const text = await res.text();
+                                console.error("Failed to parse response:", text);
+                                alert(`Transcription failed: Invalid response from server`);
+                                return;
+                              }
+                              
+                              console.log("API Response status:", res.status);
+                              console.log("API Response data:", data);
+                              
+                              if (res.ok && data.success && data.text) {
+                                setTranscribedText(data.text);
+                                console.log("Transcribed text:", data.text);
+                                console.log("Full API response:", data);
+                                
+                                // Extract loan information using OpenAI
+                                setExtracting(true);
+                                try {
+                                  const extractRes = await fetch("/api/extract-loan-info", {
+                                    method: "POST",
+                                    headers: {
+                                      "Content-Type": "application/json",
+                                    },
+                                    body: JSON.stringify({ text: data.text }),
+                                  });
+                                  
+                                  const extractData = await extractRes.json();
+                                  
+                                  if (extractRes.ok && extractData.success && extractData.loanInfo) {
+                                    const info = extractData.loanInfo;
+                                    console.log("Extracted loan info:", info);
+                                    
+                                    // Auto-fill form fields (handle null values from OpenAI)
+                                    if (info.loanAmount !== null && info.loanAmount !== undefined) {
+                                      setLoanAmount(info.loanAmount.toString());
+                                    }
+                                    if (info.description !== null && info.description !== undefined) {
+                                      setLoanDescription(info.description);
+                                    }
+                                    if (info.loanDate !== null && info.loanDate !== undefined) {
+                                      setLoanDate(info.loanDate);
+                                    }
+                                    if (info.expectedReturnDate !== null && info.expectedReturnDate !== undefined) {
+                                      setLoanExpectedReturn(info.expectedReturnDate);
+                                    }
+                                    
+                                    // Try to find partner by name
+                                    if (info.partnerName !== null && info.partnerName !== undefined) {
+                                      const foundPartner = partners.find(
+                                        (p) =>
+                                          p.name.toLowerCase().includes(info.partnerName!.toLowerCase()) ||
+                                          p.username.toLowerCase().includes(info.partnerName!.toLowerCase())
+                                      );
+                                      if (foundPartner) {
+                                        setLoanPartnerId(foundPartner.id);
+                                        console.log("Found partner:", foundPartner.name);
+                                      } else {
+                                        console.log("Partner not found:", info.partnerName);
+                                        alert(`Partner "${info.partnerName}" not found. Please select manually.`);
+                                      }
+                                    }
+                                  } else {
+                                    console.error("Extraction error:", extractData);
+                                  }
+                                } catch (extractErr: any) {
+                                  console.error("Error extracting loan info:", extractErr);
+                                  // Don't fail the whole process if extraction fails
+                                } finally {
+                                  setExtracting(false);
+                                }
+                              } else {
+                                const errorMsg = data?.error || data?.message || `HTTP ${res.status}: ${res.statusText}`;
+                                console.error("Transcription error:", {
+                                  status: res.status,
+                                  statusText: res.statusText,
+                                  data: data,
+                                  error: errorMsg,
+                                });
+                                alert(`Transcription failed: ${errorMsg}${data?.hint ? `\n\nHint: ${data.hint}` : ""}`);
+                              }
+                            } catch (err: any) {
+                              console.error("Error transcribing:", err);
+                              alert(`Error: ${err.message}`);
+                            } finally {
+                              setTranscribing(false);
+                            }
+                          };
+
+                          recorder.start();
+                          setMediaRecorder(recorder);
+                          setIsAudioRecording(true);
+                        } catch (err: any) {
+                          console.error("Error accessing microphone:", err);
+                          alert("Microphone access denied or not available");
+                        }
+                      }
+                    }}
+                    style={{
+                      padding: "0.6rem 1rem",
+                      borderRadius: "8px",
+                      border: "none",
+                      background: isAudioRecording ? "#dc2626" : "#4F46E5",
+                      color: "white",
+                      fontWeight: 600,
+                      fontSize: "0.85rem",
+                      cursor: "pointer",
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "0.5rem",
+                    }}
+                  >
+                    {isAudioRecording ? (
+                      <>
+                        <span>⏹️</span>
+                        <span>Stop Recording</span>
+                      </>
+                    ) : (
+                      <>
+                        <span>🎤</span>
+                        <span>Record Audio</span>
+                      </>
+                    )}
+                  </button>
+                  
+                  {transcribing && (
+                    <span style={{ fontSize: "0.85rem", color: "rgba(0,0,0,0.6)" }}>
+                      Transcribing...
+                    </span>
+                  )}
+                  
+                  {extracting && (
+                    <span style={{ fontSize: "0.85rem", color: "rgba(0,0,0,0.6)" }}>
+                      Extracting loan info...
+                    </span>
+                  )}
+                  
+                  {isAudioRecording && (
+                    <div
+                      style={{
+                        width: "12px",
+                        height: "12px",
+                        borderRadius: "50%",
+                        background: "#dc2626",
+                        animation: "pulse 1.5s infinite",
+                      }}
+                    />
+                  )}
+                </div>
+                
+                {transcribedText && (
+                  <div
+                    style={{
+                      padding: "0.75rem",
+                      background: "#f0f9ff",
+                      border: "1px solid #bae6fd",
+                      borderRadius: "8px",
+                      marginTop: "0.5rem",
+                    }}
+                  >
+                    <div
+                      style={{
+                        fontSize: "0.75rem",
+                        fontWeight: 600,
+                        marginBottom: "0.25rem",
+                        color: "#0369a1",
+                      }}
+                    >
+                      Transcribed Text:
+                    </div>
+                    <div
+                      style={{
+                        fontSize: "0.9rem",
+                        color: "#0c4a6e",
+                        lineHeight: "1.5",
+                      }}
+                    >
+                      {transcribedText}
+                    </div>
+                  </div>
+                )}
               </div>
 
               <div>
