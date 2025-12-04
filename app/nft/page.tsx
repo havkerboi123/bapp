@@ -63,7 +63,7 @@ type NFT = {
   loanId: string;
   loanAmount: number;
   loanDate: string;
-  metadata?: any;
+  metadata?: Record<string, unknown>;
 };
 
 export default function NFTPage() {
@@ -210,9 +210,10 @@ export default function NFTPage() {
         }
 
         setNfts(nftData);
-      } catch (err: any) {
+      } catch (err: unknown) {
         console.error("Error loading NFTs:", err);
-        setError(err.message || "Failed to load NFTs");
+        const errorMessage = err instanceof Error ? err.message : "Failed to load NFTs";
+        setError(errorMessage);
       } finally {
         setLoading(false);
       }
@@ -419,7 +420,8 @@ export default function NFTPage() {
                     overflow: "hidden",
                   }}
                 >
-                  {nft.metadata?.image ? (
+                  {typeof nft.metadata?.image === 'string' && nft.metadata.image ? (
+                    // eslint-disable-next-line @next/next/no-img-element
                     <img
                       src={nft.metadata.image}
                       alt={`NFT #${nft.tokenId}`}
@@ -451,9 +453,9 @@ export default function NFTPage() {
                       color: "#333",
                     }}
                   >
-                    {nft.metadata?.name || `Achievement #${nft.tokenId}`}
+                    {(typeof nft.metadata?.name === 'string' ? nft.metadata.name : null) || `Achievement #${nft.tokenId}`}
                   </h3>
-                  {nft.metadata?.description && (
+                  {typeof nft.metadata?.description === 'string' && nft.metadata.description && (
                     <p
                       style={{
                         color: "rgba(0,0,0,0.6)",

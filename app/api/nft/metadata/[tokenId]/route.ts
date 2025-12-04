@@ -56,10 +56,11 @@ const PKR_TO_ETH_RATE = parseFloat(
  */
 export async function GET(
   req: NextRequest,
-  { params }: { params: { tokenId: string } },
+  { params }: { params: Promise<{ tokenId: string }> },
 ) {
   try {
-    const tokenId = parseInt(params.tokenId);
+    const { tokenId: tokenIdParam } = await params;
+    const tokenId = parseInt(tokenIdParam);
 
     if (isNaN(tokenId) || tokenId <= 0) {
       return NextResponse.json({ error: "Invalid token ID" }, { status: 400 });
@@ -89,7 +90,7 @@ export async function GET(
     });
 
     // Get NFT owner
-    const owner = await publicClient.readContract({
+    const _owner = await publicClient.readContract({
       address: NFT_CONTRACT_ADDRESS as `0x${string}`,
       abi: NFT_CONTRACT_ABI,
       functionName: "ownerOf",
@@ -164,10 +165,11 @@ export async function GET(
         "Expires": "0",
       },
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Error fetching NFT metadata:", error);
+    const errorMessage = error instanceof Error ? error.message : "Internal server error";
     return NextResponse.json(
-      { error: error.message || "Internal server error" },
+      { error: errorMessage },
       { status: 500 },
     );
   }

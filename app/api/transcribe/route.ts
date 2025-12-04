@@ -125,7 +125,7 @@ export async function POST(req: NextRequest) {
     let data;
     try {
       data = await response.json();
-    } catch (parseError) {
+    } catch {
       const text = await response.text();
       console.error("Failed to parse Uplift AI response:", text);
       return NextResponse.json(
@@ -158,10 +158,11 @@ export async function POST(req: NextRequest) {
       text: transcribedText,
       raw: data,
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Error transcribing audio:", error);
+    const errorMessage = error instanceof Error ? error.message : "Internal server error";
     return NextResponse.json(
-      { error: error.message || "Internal server error" },
+      { error: errorMessage },
       { status: 500 },
     );
   }

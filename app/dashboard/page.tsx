@@ -57,11 +57,11 @@ export default function DashboardPage() {
   const [currentUser, setCurrentUser] = useState<{ name: string; username: string } | null>(null);
   const [partners, setPartners] = useState<Partner[]>([]);
   const [loans, setLoans] = useState<Loan[]>([]);
-  const [loansGiven, setLoansGiven] = useState<Loan[]>([]);
-  const [loansTaken, setLoansTaken] = useState<Loan[]>([]);
+  const [_loansGiven, setLoansGiven] = useState<Loan[]>([]);
+  const [_loansTaken, setLoansTaken] = useState<Loan[]>([]);
   const [totalLoan, setTotalLoan] = useState<number>(0);
-  const [totalLoanGiven, setTotalLoanGiven] = useState<number>(0);
-  const [totalLoanTaken, setTotalLoanTaken] = useState<number>(0);
+  const [_totalLoanGiven, setTotalLoanGiven] = useState<number>(0);
+  const [_totalLoanTaken, setTotalLoanTaken] = useState<number>(0);
   const [partnerCount, setPartnerCount] = useState<number>(0);
 
   const [newPartnerUsername, setNewPartnerUsername] = useState("");
@@ -193,6 +193,7 @@ export default function DashboardPage() {
     }, 100); // 100ms delay
 
     return () => clearTimeout(timeoutId);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     isConnected,
     address,
@@ -235,7 +236,7 @@ export default function DashboardPage() {
                 onchainLoanId = decoded.args.loanId as string;
                 break;
               }
-            } catch (e) {
+            } catch {
               // Not the event we're looking for, continue
             }
           }
@@ -485,8 +486,9 @@ export default function DashboardPage() {
         setLoans(loansData.loans ?? []);
         setTotalLoan(loansData.totalLoan ?? 0);
       }
-    } catch (err: any) {
-      setLoanError(err.message || "Network issue. Dobara koshish karein.");
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : "Network issue. Dobara koshish karein.";
+      setLoanError(errorMessage);
     } finally {
       setLoanLoading(false);
     }
@@ -1131,13 +1133,10 @@ export default function DashboardPage() {
 
                         recorder.onstop = async () => {
                           // Determine file extension based on recordedMimeType
-                          let fileExtension = "webm";
                           let fileName = "recording.webm";
                           if (recordedMimeType.includes("mp4")) {
-                            fileExtension = "mp4";
                             fileName = "recording.mp4";
                           } else if (recordedMimeType.includes("wav")) {
-                            fileExtension = "wav";
                             fileName = "recording.wav";
                           }
                             
@@ -1175,7 +1174,7 @@ export default function DashboardPage() {
                             let data;
                             try {
                               data = await res.json();
-                            } catch (parseError) {
+                            } catch {
                               const text = await res.text();
                               console.error("Failed to parse response:", text);
                               alert(`Transcription failed: Invalid response from server`);
@@ -1239,7 +1238,7 @@ export default function DashboardPage() {
                                 } else {
                                   console.error("Extraction error:", extractData);
                                 }
-                              } catch (extractErr: any) {
+                              } catch (extractErr: unknown) {
                                 console.error("Error extracting loan info:", extractErr);
                                 // Don't fail the whole process if extraction fails
                               } finally {
@@ -1255,9 +1254,10 @@ export default function DashboardPage() {
                               });
                               alert(`Transcription failed: ${errorMsg}${data?.hint ? `\n\nHint: ${data.hint}` : ""}`);
                             }
-                          } catch (err: any) {
+                          } catch (err: unknown) {
                             console.error("Error transcribing:", err);
-                            alert(`Error: ${err.message}`);
+                            const errorMessage = err instanceof Error ? err.message : "Unknown error occurred";
+                            alert(`Error: ${errorMessage}`);
                           } finally {
                             setTranscribing(false);
                           }
@@ -1266,7 +1266,7 @@ export default function DashboardPage() {
                         recorder.start();
                         setMediaRecorder(recorder);
                         setIsAudioRecording(true);
-                      } catch (err: any) {
+                      } catch (err: unknown) {
                         console.error("Error accessing microphone:", err);
                         alert("Microphone access denied or not available");
                       }

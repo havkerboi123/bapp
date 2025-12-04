@@ -90,7 +90,7 @@ export async function POST(req: NextRequest) {
     const newStatus = body.action === "accept" ? "accepted" : "rejected";
     
     // Update the loan - update by ID only since we've already verified permissions
-    const updatePayload: any = { status: newStatus };
+    const updatePayload: Record<string, unknown> = { status: newStatus };
     
     // Update wallet addresses if they're not already set
     if (ownerWalletData?.wallet_address) {

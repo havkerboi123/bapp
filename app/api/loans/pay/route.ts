@@ -218,8 +218,9 @@ export async function POST(req: NextRequest) {
           // Don't fail the payment if NFT minting fails
         }
       }
-    } catch (nftError: any) {
-      console.error("⚠️ Error minting NFT:", nftError.message);
+    } catch (nftError: unknown) {
+      const errorMessage = nftError instanceof Error ? nftError.message : "Unknown error";
+      console.error("⚠️ Error minting NFT:", errorMessage);
       // Don't fail the payment if NFT minting fails
     }
 

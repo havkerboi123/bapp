@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useAccount, useWriteContract, useWaitForTransactionReceipt, useSwitchChain } from "wagmi";
-import { parseAbi, decodeEventLog, createPublicClient, http } from "viem";
+import { parseAbi, createPublicClient, http } from "viem";
 import { baseSepolia } from "wagmi/chains";
 
 const LOAN_LEDGER_CONTRACT =
@@ -36,10 +36,13 @@ type PendingLoan = {
   loanDate: string | null;
   expectedReturnDate: string | null;
   createdAt: string;
-  ownerName: string;
-  ownerUsername: string;
-  ownerStoreName: string;
+  ownerName?: string;
+  ownerUsername?: string;
+  ownerStoreName?: string;
   status?: string;
+  onchainLoanId?: string | null;
+  ownerWallet?: string | null;
+  partnerWallet?: string | null;
 };
 
 type PaymentLoan = {
@@ -114,8 +117,8 @@ export default function PendingLoansPage() {
         // Separate pending loans (for acceptance) from payment loans
         const pending = allLoans.filter((loan: PendingLoan) => loan.status === "pending");
         const payment = allLoans
-          .filter((loan: any) => loan.status === "waiting on payment" && loan.onchainLoanId)
-          .map((loan: any) => ({
+          .filter((loan: PendingLoan & { onchainLoanId?: string }) => loan.status === "waiting on payment" && loan.onchainLoanId)
+          .map((loan: PendingLoan & { onchainLoanId?: string }) => ({
             id: loan.id,
             onchainLoanId: loan.onchainLoanId,
             amount: loan.amount,
@@ -199,7 +202,7 @@ export default function PendingLoansPage() {
         setError("Network switched! Please click 'Pay' again to proceed.");
         setPayingLoanId(null);
         return;
-      } catch (switchError: any) {
+      } catch (switchError: unknown) {
         console.error("Failed to switch network:", switchError);
         setError("Please switch to Base Sepolia network (Chain ID: 84532) manually in MetaMask.");
         setPayingLoanId(null);
@@ -273,9 +276,10 @@ export default function PendingLoansPage() {
         args: [loanIdBytes],
         value: amountInWei,
       });
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Payment error:", err);
-      setError(err.message || "Payment transaction failed. Check console for details.");
+      const errorMessage = err instanceof Error ? err.message : "Payment transaction failed. Check console for details.";
+      setError(errorMessage);
       setPayingLoanId(null);
     }
   };
@@ -327,22 +331,22 @@ export default function PendingLoansPage() {
             console.log("Reloaded loans:", data);
             const allLoans = data.loans ?? [];
             const pending = allLoans.filter((loan: PendingLoan) => loan.status === "pending");
-            const payment = allLoans
-              .filter((loan: any) => loan.status === "waiting on payment" && loan.onchainLoanId)
-              .map((loan: any) => ({
-                id: loan.id,
-                onchainLoanId: loan.onchainLoanId,
-                contractAddress: loan.contractAddress,
-                amount: loan.amount,
-                ownerWallet: loan.ownerWallet || "",
-                partnerWallet: loan.partnerWallet || "",
-                description: loan.description || "",
-                ownerName: loan.ownerName,
-                ownerUsername: loan.ownerUsername,
-                ownerStoreName: loan.ownerStoreName,
-                loanDate: loan.loanDate,
-                expectedReturnDate: loan.expectedReturnDate,
-              }));
+                    const payment = allLoans
+                      .filter((loan: PendingLoan & { onchainLoanId?: string; contractAddress?: string }) => loan.status === "waiting on payment" && loan.onchainLoanId)
+                      .map((loan: PendingLoan & { onchainLoanId?: string; contractAddress?: string }) => ({
+                        id: loan.id,
+                        onchainLoanId: loan.onchainLoanId,
+                        contractAddress: loan.contractAddress,
+                        amount: loan.amount,
+                        ownerWallet: loan.ownerWallet || "",
+                        partnerWallet: loan.partnerWallet || "",
+                        description: loan.description || "",
+                        ownerName: loan.ownerName,
+                        ownerUsername: loan.ownerUsername,
+                        ownerStoreName: loan.ownerStoreName,
+                        loanDate: loan.loanDate,
+                        expectedReturnDate: loan.expectedReturnDate,
+                      }));
             setLoans(pending);
             setPaymentLoans(payment);
             console.log("✓ Loans reloaded. Pending:", pending.length, "Payment:", payment.length);
@@ -411,8 +415,8 @@ export default function PendingLoansPage() {
                     const allLoans = data.loans ?? [];
                     const pending = allLoans.filter((loan: PendingLoan) => loan.status === "pending");
                     const payment = allLoans
-                      .filter((loan: any) => loan.status === "waiting on payment" && loan.onchainLoanId)
-                      .map((loan: any) => ({
+                      .filter((loan: PendingLoan & { onchainLoanId?: string; contractAddress?: string }) => loan.status === "waiting on payment" && loan.onchainLoanId)
+                      .map((loan: PendingLoan & { onchainLoanId?: string; contractAddress?: string }) => ({
                         id: loan.id,
                         onchainLoanId: loan.onchainLoanId,
                         contractAddress: loan.contractAddress,
@@ -438,9 +442,10 @@ export default function PendingLoansPage() {
                 setError("Transaction failed. Please try again.");
                 setPayingLoanId(null);
               }
-            } catch (err: any) {
+            } catch (err: unknown) {
               // Transaction not found yet, continue polling
-              if (err.message?.includes("not found")) {
+              const errorMessage = err instanceof Error ? err.message : "";
+              if (errorMessage?.includes("not found")) {
                 console.log(`Polling attempt ${attempts}/${maxAttempts}...`);
               } else {
                 console.error("Error polling transaction:", err);
@@ -474,7 +479,7 @@ export default function PendingLoansPage() {
   }, [paymentError, payingLoanId]);
 
   // Manual update function - call this if payment succeeded but status wasn't updated
-  const manuallyUpdatePaymentStatus = async (loanId: string, txHash: string) => {
+  const _manuallyUpdatePaymentStatus = async (loanId: string, txHash: string) => {
     if (!address) return;
     
     try {
@@ -506,8 +511,8 @@ export default function PendingLoansPage() {
         const allLoans = data.loans ?? [];
         const pending = allLoans.filter((loan: PendingLoan) => loan.status === "pending");
         const payment = allLoans
-          .filter((loan: any) => loan.status === "waiting on payment" && loan.onchainLoanId)
-          .map((loan: any) => ({
+          .filter((loan: PendingLoan & { onchainLoanId?: string }) => loan.status === "waiting on payment" && loan.onchainLoanId)
+          .map((loan: PendingLoan & { onchainLoanId?: string }) => ({
             id: loan.id,
             onchainLoanId: loan.onchainLoanId,
             amount: loan.amount,
@@ -680,8 +685,8 @@ export default function PendingLoansPage() {
                     const allLoans = data.loans ?? [];
                     const pending = allLoans.filter((loan: PendingLoan) => loan.status === "pending");
                     const payment = allLoans
-                      .filter((loan: any) => loan.status === "waiting on payment" && loan.onchainLoanId)
-                      .map((loan: any) => ({
+                      .filter((loan: PendingLoan & { onchainLoanId?: string; contractAddress?: string }) => loan.status === "waiting on payment" && loan.onchainLoanId)
+                      .map((loan: PendingLoan & { onchainLoanId?: string; contractAddress?: string }) => ({
                         id: loan.id,
                         onchainLoanId: loan.onchainLoanId,
                         amount: loan.amount,

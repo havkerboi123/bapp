@@ -20,7 +20,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const updateData: any = {
+    const updateData: Record<string, unknown> = {
       tx_hash: body.txHash,
       status: "waiting on payment", // Change status after recording on-chain
     };

@@ -1,5 +1,4 @@
 "use client";
-import Image from "next/image";
 import styles from "./page.module.css";
 import { Wallet, ConnectWallet } from "@coinbase/onchainkit/wallet";
 import { useRouter } from "next/navigation";
@@ -38,7 +37,7 @@ export default function Home() {
       }
 
       setError("Something went wrong. Please try again in a moment.");
-    } catch (e) {
+    } catch {
       setError("Network issue. Please check your internet and try again.");
     } finally {
       setLoadingAction(null);
@@ -70,7 +69,7 @@ export default function Home() {
       }
 
       setError("Something went wrong. Please try again in a moment.");
-    } catch (e) {
+    } catch {
       setError("Network issue. Please check your internet and try again.");
     } finally {
       setLoadingAction(null);
@@ -111,7 +110,7 @@ export default function Home() {
               Urdu voice AI ledger for Pakistani shopkeepers
             </p>
             <p className={styles.heroSubtitle}>
-              Digitize your shop's old register. On Base, record credit using Urdu voice, check accounts, and send crypto payments directly from your wallet, all on base.
+              Digitize your shop&apos;s old register. On Base, record credit using Urdu voice, check accounts, and send crypto payments directly from your wallet, all on base.
             </p>
 
             <div className={styles.actionsRow}>

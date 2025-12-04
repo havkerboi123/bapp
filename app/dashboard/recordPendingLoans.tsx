@@ -24,8 +24,8 @@ export function RecordPendingLoans({
   const {
     recordLoan: recordLoanOnChain,
     hash: txHash,
-    isPending: isRecordingOnChain,
-    isConfirmed: isTxConfirmed,
+    isPending: _isRecordingOnChain,
+    isConfirmed: _isTxConfirmed,
   } = useRecordLoan();
 
   useEffect(() => {

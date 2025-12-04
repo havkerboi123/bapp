@@ -74,11 +74,12 @@ If any information is missing, leave it as null or empty. Return dates in YYYY-M
       loanInfo: loanInfo,
       raw: response,
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Error extracting loan info:", error);
+    const errorMessage = error instanceof Error ? error.message : "Internal server error";
     return NextResponse.json(
       {
-        error: error.message || "Internal server error",
+        error: errorMessage,
         details: error,
       },
       { status: 500 },

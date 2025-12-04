@@ -111,8 +111,12 @@ export async function POST(req: NextRequest) {
       expectedReturnDate: (loanRow.expected_return_date as string | null) ?? null,
       txHash: (loanRow.tx_hash as string | null) ?? null,
       status: (loanRow.status as string) || "pending",
-      partnerName: loanRow.partner.name as string,
-      partnerUsername: loanRow.partner.username as string,
+      partnerName: Array.isArray(loanRow.partner) 
+        ? (loanRow.partner[0] as Record<string, unknown>)?.name as string
+        : (loanRow.partner as Record<string, unknown>)?.name as string,
+      partnerUsername: Array.isArray(loanRow.partner)
+        ? (loanRow.partner[0] as Record<string, unknown>)?.username as string
+        : (loanRow.partner as Record<string, unknown>)?.username as string,
     };
 
     return NextResponse.json({ loan });
@@ -136,7 +140,13 @@ export async function GET(req: NextRequest) {
   }
 
   // Fetch loans given (where user is owner)
-  let loansGiven: any[] = [];
+  type LoanGiven = {
+    id: string;
+    amount: number;
+    status: string;
+    [key: string]: unknown;
+  };
+  let loansGiven: LoanGiven[] = [];
   let totalLoanGiven = 0;
 
   if (ownerWallet) {
@@ -173,17 +183,23 @@ export async function GET(req: NextRequest) {
         .order("created_at", { ascending: false });
 
       if (!error && data) {
-        loansGiven = data.map((row: any) => ({
+        loansGiven = data.map((row: Record<string, unknown>) => ({
           id: row.id as string,
           amount: row.amount as number,
+          status: (row.status as string) || "pending",
           description: (row.description as string | null) ?? null,
           loanDate: (row.loan_date as string | null) ?? null,
           expectedReturnDate: (row.expected_return_date as string | null) ?? null,
           txHash: (row.tx_hash as string | null) ?? null,
-          status: (row.status as string) || "pending",
-          partnerName: row.partner?.name as string,
-          partnerUsername: row.partner?.username as string,
-          partnerWallet: row.partner?.wallet_address as string | undefined,
+          partnerName: Array.isArray(row.partner) 
+            ? (row.partner[0] as Record<string, unknown>)?.name as string
+            : (row.partner as Record<string, unknown>)?.name as string,
+          partnerUsername: Array.isArray(row.partner)
+            ? (row.partner[0] as Record<string, unknown>)?.username as string
+            : (row.partner as Record<string, unknown>)?.username as string,
+          partnerWallet: Array.isArray(row.partner)
+            ? (row.partner[0] as Record<string, unknown>)?.wallet_address as string | undefined
+            : (row.partner as Record<string, unknown>)?.wallet_address as string | undefined,
           loanType: "given" as const,
         }));
 
@@ -195,7 +211,13 @@ export async function GET(req: NextRequest) {
   }
 
   // Fetch loans taken (where user is partner)
-  let loansTaken: any[] = [];
+  type LoanTaken = {
+    id: string;
+    amount: number;
+    status: string;
+    [key: string]: unknown;
+  };
+  let loansTaken: LoanTaken[] = [];
   let totalLoanTaken = 0;
 
   if (partnerWallet) {
@@ -232,8 +254,8 @@ export async function GET(req: NextRequest) {
 
       if (!error && data) {
         // Fetch owner details separately
-        const ownerIds = [...new Set(data.map((row: any) => row.owner_user_id).filter(Boolean))];
-        const ownerMap = new Map();
+        const ownerIds = [...new Set(data.map((row: Record<string, unknown>) => row.owner_user_id).filter(Boolean))];
+        const ownerMap = new Map<string, Record<string, unknown>>();
         
         if (ownerIds.length > 0) {
           const { data: owners } = await supabase
@@ -242,22 +264,22 @@ export async function GET(req: NextRequest) {
             .in("id", ownerIds);
           
           if (owners) {
-            owners.forEach((owner: any) => {
-              ownerMap.set(owner.id, owner);
+            owners.forEach((owner: Record<string, unknown>) => {
+              ownerMap.set(owner.id as string, owner);
             });
           }
         }
 
-        loansTaken = data.map((row: any) => {
-          const ownerData = ownerMap.get(row.owner_user_id) || null;
+        loansTaken = data.map((row: Record<string, unknown>) => {
+          const ownerData = ownerMap.get(row.owner_user_id as string) || null;
           return {
             id: row.id as string,
             amount: row.amount as number,
+            status: (row.status as string) || "pending",
             description: (row.description as string | null) ?? null,
             loanDate: (row.loan_date as string | null) ?? null,
             expectedReturnDate: (row.expected_return_date as string | null) ?? null,
             txHash: (row.tx_hash as string | null) ?? null,
-            status: (row.status as string) || "pending",
             ownerName: ownerData?.name as string | undefined,
             ownerUsername: ownerData?.username as string | undefined,
             ownerWallet: ownerData?.wallet_address as string | undefined,

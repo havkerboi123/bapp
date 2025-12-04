@@ -92,8 +92,8 @@ export async function GET(req: NextRequest) {
   const data = [...(pendingData || []), ...(paymentData || [])];
 
   // Fetch owner details for all unique owner IDs
-  const ownerIds = [...new Set(data?.map((row: any) => row.owner_user_id).filter(Boolean) || [])];
-  const ownerMap = new Map();
+  const ownerIds = [...new Set(data?.map((row: Record<string, unknown>) => row.owner_user_id).filter(Boolean) || [])];
+  const ownerMap = new Map<string, Record<string, unknown>>();
   
   if (ownerIds.length > 0) {
     const { data: owners, error: ownersError } = await supabase
@@ -102,15 +102,15 @@ export async function GET(req: NextRequest) {
       .in("id", ownerIds);
     
     if (!ownersError && owners) {
-      owners.forEach((owner: any) => {
-        ownerMap.set(owner.id, owner);
+      owners.forEach((owner: Record<string, unknown>) => {
+        ownerMap.set(owner.id as string, owner);
       });
     }
   }
 
   const loans =
-    data?.map((row: any) => {
-      const ownerData = ownerMap.get(row.owner_user_id) || null;
+    data?.map((row: Record<string, unknown>) => {
+      const ownerData = ownerMap.get(row.owner_user_id as string) || null;
       return {
         id: row.id as string,
         amount: row.amount as number,

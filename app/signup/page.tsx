@@ -52,7 +52,7 @@ export default function SignupPage() {
       }
 
       router.push("/");
-    } catch (err) {
+    } catch {
       setError("Something went wrong. Please try again.");
     } finally {
       setIsSubmitting(false);

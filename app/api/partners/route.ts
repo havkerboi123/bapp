@@ -106,7 +106,7 @@ export async function POST(req: NextRequest) {
         name: partner.name,
       },
     });
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 },
@@ -164,12 +164,17 @@ export async function GET(req: NextRequest) {
   }
 
   const partners =
-    data?.map((row: any) => ({
-      id: row.id as string,
-      username: row.partner_user.username as string,
-      name: row.partner_user.name as string,
-      walletAddress: row.partner_user.wallet_address as string,
-    })) ?? [];
+    data?.map((row: Record<string, unknown>) => {
+      const partnerUser = Array.isArray(row.partner_user)
+        ? (row.partner_user[0] as Record<string, unknown>)
+        : (row.partner_user as Record<string, unknown>);
+      return {
+        id: row.id as string,
+        username: partnerUser?.username as string,
+        name: partnerUser?.name as string,
+        walletAddress: partnerUser?.wallet_address as string,
+      };
+    }) ?? [];
 
   return NextResponse.json({
     partners,

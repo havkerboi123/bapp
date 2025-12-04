@@ -112,11 +112,12 @@ export async function POST(req: NextRequest) {
     let account;
     try {
       account = privateKeyToAccount(ownerPrivateKey as `0x${string}`);
-    } catch (keyError: any) {
+    } catch (keyError: unknown) {
       console.error("Invalid private key:", keyError);
+      const errorMessage = keyError instanceof Error ? keyError.message : "Unknown error";
       return NextResponse.json(
         {
-          error: `Invalid private key: ${keyError.message}. Please check your NFT_MINTER_PRIVATE_KEY in .env.local`,
+          error: `Invalid private key: ${errorMessage}. Please check your NFT_MINTER_PRIVATE_KEY in .env.local`,
         },
         { status: 500 },
       );
@@ -175,10 +176,11 @@ export async function POST(req: NextRequest) {
         { status: 500 },
       );
     }
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Error minting NFT:", error);
+    const errorMessage = error instanceof Error ? error.message : "Internal server error";
     return NextResponse.json(
-      { error: error.message || "Internal server error" },
+      { error: errorMessage },
       { status: 500 },
     );
   }
